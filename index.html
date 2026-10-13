@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Costos & Precios</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      padding-bottom: 40px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 20px;
+      color: #38bdf8;
+    }
+    .header p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 15px;
+      color: #f59e0b;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #cbd5e1;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #fff;
+      font-size: 14px;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .row input {
+      margin-top: 0;
+    }
+    .btn-add {
+      background: #38bdf8;
+      color: #0f172a;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-del {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    /* Resultados */
+    .result-box {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 2px solid #38bdf8;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .result-item {
+      margin-bottom: 12px;
+    }
+    .result-item .title {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .result-item .val {
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .val-costo { color: #f8fafc; }
+    .val-precio { color: #4ade80; }
+    .val-ganancia { color: #f59e0b; }
+
+    .btn-whatsapp {
+      background: #22c55e;
+      color: #fff;
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🧮 Calculadora de Costos & Precios</h1>
+    <p>Calcula el costo real de tu producto y define tu margen de ganancia sin errores.</p>
+  </div>
+
+  <!-- NOMBRE DEL PRODUCTO -->
+  <div class="card">
+    <label>Nombre del Producto / Servicio:</label>
+    <input type="text" id="prod-name" placeholder="Ej: Franela Sublimada A3 / Taza Personalizada">
+  </div>
+
+  <!-- SECCIÓN 1: MATERIALES / INSUMOS -->
+  <div class="card">
+    <h2>
+      📦 Materia Prima e Insumos
+      <button class="btn-add" onclick="addMaterial()">+ Agregar Item</button>
+    </h2>
+    <div id="materials-container">
+      <div class="row mat-item">
+        <input type="text" placeholder="Ej: Franela blanca" class="mat-desc" style="flex: 2;">
+        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+        <button class="btn-del" onclick="removeRow(this)">✕</button>
+      </div>
+      <div class="row mat-item">
+        <input type="text" placeholder="Ej: Tinta y Papel A3" class="mat-desc" style="flex: 2;">
+        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+        <button class="btn-del" onclick="removeRow(this)">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 2: MANO DE OBRA Y GASTOS -->
+  <div class="card">
+    <h2>⏱️ Mano de Obra y Servicios</h2>
+    
+    <div class="row">
+      <div style="flex: 1;">
+        <label>Tiempo de Elaboración (Minutos):</label>
+        <input type="number" id="time-min" value="30" oninput="calculate()">
+      </div>
+      <div style="flex: 1;">
+        <label>Valor Hora Trabajada ($):</label>
+        <input type="number" step="0.5" id="hourly-rate" value="5.00" oninput="calculate()">
+      </div>
+    </div>
+
+    <label>Gastos Indirectos (Luz, Desgaste de Equipo, Empaque) ($):</label>
+    <input type="number" step="0.01" id="overhead-cost" value="0.50" oninput="calculate()">
+  </div>
+
+  <!-- SECCIÓN 3: MARGEN DE GANANCIA -->
+  <div class="card">
+    <h2>📈 Margen de Ganancia Deseado</h2>
+    <label>Porcentaje de Ganancia (%):</label>
+    <input type="number" id="profit-margin" value="50" oninput="calculate()">
+  </div>
+
+  <!-- RESUMEN DE RESULTADOS -->
+  <div class="result-box">
+    <div class="result-item">
+      <div class="title">Costo Total de Producción</div>
+      <div class="val val-costo" id="res-cost">$0.00</div>
+    </div>
+    
+    <div class="result-item">
+      <div class="title">Ganancia Neta por Unidad</div>
+      <div class="val val-ganancia" id="res-profit">$0.00</div>
+    </div>
+
+    <div class="result-item" style="margin-bottom: 0;">
+      <div class="title" style="color: #4ade80; font-weight: bold;">PRECIO DE VENTA SUGERIDO</div>
+      <div class="val val-precio" id="res-price">$0.00</div>
+    </div>
+  </div>
+
+  <button class="btn-whatsapp" onclick="shareWhatsApp()">Enviar Ficha de Costo por WhatsApp 📲</button>
+
+  <script>
+    function addMaterial() {
+      const container = document.getElementById('materials-container');
+      const div = document.createElement('div');
+      div.className = 'row mat-item';
+      div.innerHTML = `
+        <input type="text" placeholder="Otro insumo/empaque" class="mat-desc" style="flex: 2;">
+        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+        <button class="btn-del" onclick="removeRow(this)">✕</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function removeRow(btn) {
+      btn.parentElement.remove();
+      calculate();
+    }
+
+    function calculate() {
+      // 1. Sumar materiales
+      let materialsTotal = 0;
+      document.querySelectorAll('.mat-cost').forEach(input => {
+        const val = parseFloat(input.value) || 0;
+        materialsTotal += val;
+      });
+
+      // 2. Mano de obra
+      const min = parseFloat(document.getElementById('time-min').value) || 0;
+      const rate = parseFloat(document.getElementById('hourly-rate').value) || 0;
+      const laborCost = (min / 60) * rate;
+
+      // 3. Gastos indirectos
+      const overhead = parseFloat(document.getElementById('overhead-cost').value) || 0;
+
+      // Costo Total
+      const totalCost = materialsTotal + laborCost + overhead;
+
+      // 4. Margen de ganancia
+      const marginPct = parseFloat(document.getElementById('profit-margin').value) || 0;
+      const profit = totalCost * (marginPct / 100);
+      const sellingPrice = totalCost + profit;
+
+      // Renderizar resultados
+      document.getElementById('res-cost').innerText = `$${totalCost.toFixed(2)}`;
+      document.getElementById('res-profit').innerText = `$${profit.toFixed(2)} (${marginPct}%)`;
+      document.getElementById('res-price').innerText = `$${sellingPrice.toFixed(2)}`;
+    }
+
+    function shareWhatsApp() {
+      const name = document.getElementById('prod-name').value.trim() || "Producto Personalizado";
+      const cost = document.getElementById('res-cost').innerText;
+      const profit = document.getElementById('res-profit').innerText;
+      const price = document.getElementById('res-price').innerText;
+
+      let text = `📊 *FICHA DE COSTOS Y PRECIO sugerido*\n\n`;
+      text += `🛍️ *Producto:* ${name}\n`;
+      text += `⚙️ *Costo de Producción:* ${cost}\n`;
+      text += `💵 *Ganancia Estimada:* ${profit}\n`;
+      text += `🏷️ *PRECIO DE VENTA:* ${price}\n\n`;
+      text += `Calculado desde la Mini App de Costos 🧮`;
+
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    // Inicializar cálculo al cargar
+    calculate();
+
+    if (window.Telegram && window.Telegram.WebApp) {
+      Telegram.WebApp.ready();
+      Telegram.WebApp.expand();
+    }
+  </script>
+</body>
+</html>
