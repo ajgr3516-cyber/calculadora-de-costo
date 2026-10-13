@@ -112,19 +112,7 @@
     .val-costo { color: #f8fafc; }
     .val-precio { color: #4ade80; }
     .val-ganancia { color: #f59e0b; }
-
-    .btn-whatsapp {
-      background: #22c55e;
-      color: #fff;
-      border: none;
-      width: 100%;
-      padding: 14px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 16px;
-    }
+    .val-porcentaje { color: #38bdf8; }
   </style>
 </head>
 <body>
@@ -192,6 +180,11 @@
       <div class="title">Costo Total de Producción</div>
       <div class="val val-costo" id="res-cost">$0.00</div>
     </div>
+
+    <div class="result-item">
+      <div class="title">Margen de Ganancia (%)</div>
+      <div class="val val-porcentaje" id="res-margin-pct">0%</div>
+    </div>
     
     <div class="result-item">
       <div class="title">Ganancia Neta por Unidad</div>
@@ -203,8 +196,6 @@
       <div class="val val-precio" id="res-price">$0.00</div>
     </div>
   </div>
-
-  <button class="btn-whatsapp" onclick="shareWhatsApp()">Enviar Ficha de Costo por WhatsApp 📲</button>
 
   <script>
     function addMaterial() {
@@ -250,24 +241,9 @@
 
       // Renderizar resultados
       document.getElementById('res-cost').innerText = `$${totalCost.toFixed(2)}`;
-      document.getElementById('res-profit').innerText = `$${profit.toFixed(2)} (${marginPct}%)`;
+      document.getElementById('res-margin-pct').innerText = `${marginPct}%`;
+      document.getElementById('res-profit').innerText = `$${profit.toFixed(2)}`;
       document.getElementById('res-price').innerText = `$${sellingPrice.toFixed(2)}`;
-    }
-
-    function shareWhatsApp() {
-      const name = document.getElementById('prod-name').value.trim() || "Producto Personalizado";
-      const cost = document.getElementById('res-cost').innerText;
-      const profit = document.getElementById('res-profit').innerText;
-      const price = document.getElementById('res-price').innerText;
-
-      let text = `📊 *FICHA DE COSTOS Y PRECIO sugerido*\n\n`;
-      text += `🛍️ *Producto:* ${name}\n`;
-      text += `⚙️ *Costo de Producción:* ${cost}\n`;
-      text += `💵 *Ganancia Estimada:* ${profit}\n`;
-      text += `🏷️ *PRECIO DE VENTA:* ${price}\n\n`;
-      text += `Calculado desde la Mini App de Costos 🧮`;
-
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
     // Inicializar cálculo al cargar
