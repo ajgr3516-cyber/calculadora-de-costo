@@ -90,13 +90,24 @@
       font-weight: bold;
       cursor: pointer;
     }
+    .subtotal-tag {
+      background: #0f172a;
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: bold;
+      text-align: right;
+      margin-top: 10px;
+    }
+    
     /* Resultados */
     .result-box {
       background: linear-gradient(135deg, #1e293b, #0f172a);
       border: 2px solid #38bdf8;
       border-radius: 12px;
       padding: 16px;
-      text-align: center;
     }
     .result-grid {
       display: grid;
@@ -109,6 +120,7 @@
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #334155;
+      text-align: center;
     }
     .result-item .title {
       font-size: 11px;
@@ -123,23 +135,27 @@
     .val-precio { color: #4ade80; }
     .val-ganancia { color: #f59e0b; }
     .val-porcentaje { color: #38bdf8; }
-    
-    .total-banner {
+
+    /* Bloque Resumen del Lote */
+    .lote-summary {
       background: #0f172a;
-      border: 1px solid #4ade80;
-      border-radius: 8px;
+      border: 1px solid #334155;
+      border-radius: 10px;
       padding: 12px;
-      margin-top: 8px;
+      margin-top: 12px;
     }
-    .total-banner .title {
-      font-size: 12px;
-      color: #4ade80;
-      font-weight: bold;
+    .lote-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      padding: 4px 0;
     }
-    .total-banner .val {
-      font-size: 24px;
+    .lote-row.border-top {
+      border-top: 1px solid #334155;
+      margin-top: 6px;
+      padding-top: 8px;
       font-weight: bold;
-      color: #4ade80;
     }
   </style>
 </head>
@@ -147,7 +163,7 @@
 
   <div class="header">
     <h1>🧮 Calculadora de Costos & Precios</h1>
-    <p>Calcula el costo real y define tu margen de ganancia sin errores.</p>
+    <p>Calcula tus costos reales, margen y ganancia por lote o unidad.</p>
   </div>
 
   <!-- NOMBRE Y CANTIDAD -->
@@ -155,32 +171,37 @@
     <div class="row">
       <div style="flex: 2;">
         <label>Producto / Servicio:</label>
-        <input type="text" id="prod-name" placeholder="Ej: Franela Sublimada A3">
+        <input type="text" id="prod-name" placeholder="Ej: Franela Sublimada / Taza">
       </div>
       <div style="flex: 1;">
-        <label>Cantidad a Realizar:</label>
+        <label>Cantidad (Lote):</label>
         <input type="number" id="prod-qty" value="1" min="1" oninput="calculate()">
       </div>
     </div>
   </div>
 
-  <!-- SECCIÓN 1: MATERIALES / INSUMOS DEL LOTE -->
+  <!-- SECCIÓN 1: MATERIALES E INSUMOS -->
   <div class="card">
     <h2>
-      📦 Materia Prima e Insumos (Total)
+      📦 Materia Prima e Insumos
       <button class="btn-add" onclick="addMaterial()">+ Agregar Item</button>
     </h2>
     <div id="materials-container">
       <div class="row mat-item">
-        <input type="text" placeholder="Ej: Franelas blancas" class="mat-desc" style="flex: 2;">
-        <input type="number" step="0.01" placeholder="Costo Total ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+        <input type="text" placeholder="Ej: Tela / Camisetas" class="mat-desc" style="flex: 2;">
+        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
         <button class="btn-del" onclick="removeRow(this)">✕</button>
       </div>
       <div class="row mat-item">
-        <input type="text" placeholder="Ej: Tinta y Papel" class="mat-desc" style="flex: 2;">
-        <input type="number" step="0.01" placeholder="Costo Total ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+        <input type="text" placeholder="Ej: Tinta / Papel / Hilo" class="mat-desc" style="flex: 2;">
+        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
         <button class="btn-del" onclick="removeRow(this)">✕</button>
       </div>
+    </div>
+    
+    <!-- Subtotal Materia Prima en $ -->
+    <div class="subtotal-tag">
+      Total Materia Prima: <span id="mat-subtotal" style="color: #fff;">$0.00</span>
     </div>
   </div>
 
@@ -212,33 +233,32 @@
 
   <!-- RESUMEN DE RESULTADOS -->
   <div class="result-box">
+    <!-- POR UNIDAD -->
     <div class="result-grid">
       <div class="result-item">
         <div class="title">Costo por Unidad</div>
         <div class="val val-costo" id="res-unit-cost">$0.00</div>
       </div>
       <div class="result-item">
-        <div class="title">Margen Ganancia</div>
-        <div class="val val-porcentaje" id="res-margin-pct">0%</div>
-      </div>
-      <div class="result-item">
-        <div class="title">Ganancia por Unidad</div>
-        <div class="val val-ganancia" id="res-unit-profit">$0.00</div>
-      </div>
-      <div class="result-item">
-        <div class="title">Ganancia Total Lote</div>
-        <div class="val val-ganancia" id="res-total-profit">$0.00</div>
+        <div class="title">Precio Venta p/Unidad</div>
+        <div class="val val-precio" id="res-unit-price">$0.00</div>
       </div>
     </div>
 
-    <div class="result-item" style="margin-bottom: 8px; background: rgba(56, 189, 248, 0.1); border-color: #38bdf8;">
-      <div class="title" style="color: #38bdf8; font-weight: bold;">PRECIO DE VENTA POR UNIDAD</div>
-      <div class="val val-precio" id="res-unit-price">$0.00</div>
-    </div>
-
-    <div class="total-banner">
-      <div class="title">PRECIO TOTAL DEL PEDIDO / LOTE</div>
-      <div class="val" id="res-total-price">$0.00</div>
+    <!-- BALANCE TOTAL DEL LOTE -->
+    <div class="lote-summary">
+      <div class="lote-row" style="color: #4ade80;">
+        <span>(+) Precio Total Venta (Lote):</span>
+        <span id="res-total-price" style="font-size: 16px; font-weight: bold;">$0.00</span>
+      </div>
+      <div class="lote-row" style="color: #ef4444;">
+        <span>(-) Costo Total Producción:</span>
+        <span id="res-total-cost">$0.00</span>
+      </div>
+      <div class="lote-row border-top" style="color: #f59e0b;">
+        <span>(=) GANANCIA NETA REFLEJADA:</span>
+        <span id="res-total-profit" style="font-size: 18px;">$0.00</span>
+      </div>
     </div>
   </div>
 
@@ -249,7 +269,7 @@
       div.className = 'row mat-item';
       div.innerHTML = `
         <input type="text" placeholder="Otro insumo/empaque" class="mat-desc" style="flex: 2;">
-        <input type="number" step="0.01" placeholder="Costo Total ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
         <button class="btn-del" onclick="removeRow(this)">✕</button>
       `;
       container.appendChild(div);
@@ -264,43 +284,44 @@
       // Cantidad de unidades
       const qty = Math.max(1, parseInt(document.getElementById('prod-qty').value) || 1);
 
-      // 1. Sumar materiales totales
+      // 1. Sumar materia prima
       let materialsTotal = 0;
       document.querySelectorAll('.mat-cost').forEach(input => {
         const val = parseFloat(input.value) || 0;
         materialsTotal += val;
       });
 
-      // 2. Mano de obra total
+      // Reflejar Subtotal Materia Prima
+      document.getElementById('mat-subtotal').innerText = `$${materialsTotal.toFixed(2)}`;
+
+      // 2. Mano de obra
       const min = parseFloat(document.getElementById('time-min').value) || 0;
       const rate = parseFloat(document.getElementById('hourly-rate').value) || 0;
       const laborCost = (min / 60) * rate;
 
-      // 3. Gastos indirectos totales
+      // 3. Gastos indirectos
       const overhead = parseFloat(document.getElementById('overhead-cost').value) || 0;
 
-      // Costo Total del Lote
+      // Costo Total
       const totalCost = materialsTotal + laborCost + overhead;
       const unitCost = totalCost / qty;
 
-      // 4. Margen de ganancia
+      // 4. Margen y Precios
       const marginPct = parseFloat(document.getElementById('profit-margin').value) || 0;
       const totalProfit = totalCost * (marginPct / 100);
-      const unitProfit = totalProfit / qty;
-
       const totalPrice = totalCost + totalProfit;
       const unitPrice = totalPrice / qty;
 
-      // Renderizar resultados
+      // Renderizar valores en pantalla
       document.getElementById('res-unit-cost').innerText = `$${unitCost.toFixed(2)}`;
-      document.getElementById('res-margin-pct').innerText = `${marginPct}%`;
-      document.getElementById('res-unit-profit').innerText = `$${unitProfit.toFixed(2)}`;
-      document.getElementById('res-total-profit').innerText = `$${totalProfit.toFixed(2)}`;
       document.getElementById('res-unit-price').innerText = `$${unitPrice.toFixed(2)}`;
+
       document.getElementById('res-total-price').innerText = `$${totalPrice.toFixed(2)}`;
+      document.getElementById('res-total-cost').innerText = `-$${totalCost.toFixed(2)}`;
+      document.getElementById('res-total-profit').innerText = `$${totalProfit.toFixed(2)}`;
     }
 
-    // Inicializar cálculo al cargar
+    // Inicializar cálculo
     calculate();
 
     if (window.Telegram && window.Telegram.WebApp) {
