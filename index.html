@@ -134,7 +134,6 @@
     .val-costo { color: #f8fafc; }
     .val-precio { color: #4ade80; }
     .val-ganancia { color: #f59e0b; }
-    .val-porcentaje { color: #38bdf8; }
 
     /* Bloque Resumen del Lote */
     .lote-summary {
@@ -157,112 +156,187 @@
       padding-top: 8px;
       font-weight: bold;
     }
+
+    /* PANTALLA DE BLOQUEO / DENEGADO */
+    #access-denied {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      background: #1e293b;
+      border: 2px solid #ef4444;
+      border-radius: 16px;
+      margin-top: 20px;
+    }
+    #access-denied h2 {
+      color: #ef4444;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    #access-denied p {
+      color: #cbd5e1;
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .btn-buy {
+      display: inline-block;
+      background: #4ade80;
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>🧮 Calculadora de Costos & Precios</h1>
-    <p>Calcula tus costos reales, margen y ganancia por lote o unidad.</p>
+  <!-- PANTALLA DE BLOQUEO -->
+  <div id="access-denied">
+    <h2>🔒 Licencia No Detectada</h2>
+    <p>Esta herramienta es de uso exclusivo para usuarios autorizados.<br>
+    Si compartiste esta app o no tienes una licencia activa, adquiere tu acceso personal.</p>
+    <p style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">
+      Tu ID de Telegram es: <strong id="user-id-display" style="color: #38bdf8;">--</strong>
+    </p>
+    <a href="https://t.me/CalculadoraPrecioBot" class="btn-buy">Adquirir Licencia Personal 🚀</a>
   </div>
 
-  <!-- NOMBRE Y CANTIDAD -->
-  <div class="card">
-    <div class="row">
-      <div style="flex: 2;">
-        <label>Producto / Servicio:</label>
-        <input type="text" id="prod-name" placeholder="Ej: Franela Sublimada / Taza">
-      </div>
-      <div style="flex: 1;">
-        <label>Cantidad (Lote):</label>
-        <input type="number" id="prod-qty" value="1" min="1" oninput="calculate()">
-      </div>
+  <!-- CONTENIDO PRINCIPAL DE LA CALCULADORA -->
+  <div id="app-content" style="display: none;">
+    <div class="header">
+      <h1>🧮 Calculadora de Costos & Precios</h1>
+      <p>Calcula tus costos reales, margen y ganancia por lote o unidad.</p>
     </div>
-  </div>
 
-  <!-- SECCIÓN 1: MATERIALES E INSUMOS -->
-  <div class="card">
-    <h2>
-      📦 Materia Prima e Insumos
-      <button class="btn-add" onclick="addMaterial()">+ Agregar Item</button>
-    </h2>
-    <div id="materials-container">
-      <div class="row mat-item">
-        <input type="text" placeholder="Ej: Tela / Camisetas" class="mat-desc" style="flex: 2;">
-        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
-        <button class="btn-del" onclick="removeRow(this)">✕</button>
-      </div>
-      <div class="row mat-item">
-        <input type="text" placeholder="Ej: Tinta / Papel / Hilo" class="mat-desc" style="flex: 2;">
-        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
-        <button class="btn-del" onclick="removeRow(this)">✕</button>
-      </div>
-    </div>
-    
-    <!-- Subtotal Materia Prima en $ -->
-    <div class="subtotal-tag">
-      Total Materia Prima: <span id="mat-subtotal" style="color: #fff;">$0.00</span>
-    </div>
-  </div>
-
-  <!-- SECCIÓN 2: MANO DE OBRA Y GASTOS -->
-  <div class="card">
-    <h2>⏱️ Mano de Obra y Servicios</h2>
-    
-    <div class="row">
-      <div style="flex: 1;">
-        <label>Tiempo Total (Minutos):</label>
-        <input type="number" id="time-min" value="30" oninput="calculate()">
-      </div>
-      <div style="flex: 1;">
-        <label>Valor Hora ($):</label>
-        <input type="number" step="0.5" id="hourly-rate" value="5.00" oninput="calculate()">
+    <!-- NOMBRE Y CANTIDAD -->
+    <div class="card">
+      <div class="row">
+        <div style="flex: 2;">
+          <label>Producto / Servicio:</label>
+          <input type="text" id="prod-name" placeholder="Ej: Franela Sublimada / Taza">
+        </div>
+        <div style="flex: 1;">
+          <label>Cantidad (Lote):</label>
+          <input type="number" id="prod-qty" value="1" min="1" oninput="calculate()">
+        </div>
       </div>
     </div>
 
-    <label>Gastos Indirectos Totales (Luz, Desgaste, Empaque) ($):</label>
-    <input type="number" step="0.01" id="overhead-cost" value="0.50" oninput="calculate()">
-  </div>
-
-  <!-- SECCIÓN 3: MARGEN DE GANANCIA -->
-  <div class="card">
-    <h2>📈 Margen de Ganancia</h2>
-    <label>Porcentaje de Ganancia Deseado (%):</label>
-    <input type="number" id="profit-margin" value="50" oninput="calculate()">
-  </div>
-
-  <!-- RESUMEN DE RESULTADOS -->
-  <div class="result-box">
-    <!-- POR UNIDAD -->
-    <div class="result-grid">
-      <div class="result-item">
-        <div class="title">Costo por Unidad</div>
-        <div class="val val-costo" id="res-unit-cost">$0.00</div>
+    <!-- SECCIÓN 1: MATERIALES E INSUMOS -->
+    <div class="card">
+      <h2>
+        📦 Materia Prima e Insumos
+        <button class="btn-add" onclick="addMaterial()">+ Agregar Item</button>
+      </h2>
+      <div id="materials-container">
+        <div class="row mat-item">
+          <input type="text" placeholder="Ej: Tela / Camisetas" class="mat-desc" style="flex: 2;">
+          <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+          <button class="btn-del" onclick="removeRow(this)">✕</button>
+        </div>
+        <div class="row mat-item">
+          <input type="text" placeholder="Ej: Tinta / Papel / Hilo" class="mat-desc" style="flex: 2;">
+          <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+          <button class="btn-del" onclick="removeRow(this)">✕</button>
+        </div>
       </div>
-      <div class="result-item">
-        <div class="title">Precio Venta p/Unidad</div>
-        <div class="val val-precio" id="res-unit-price">$0.00</div>
+      
+      <!-- Subtotal Materia Prima -->
+      <div class="subtotal-tag">
+        Total Materia Prima: <span id="mat-subtotal" style="color: #fff;">$0.00</span>
       </div>
     </div>
 
-    <!-- BALANCE TOTAL DEL LOTE -->
-    <div class="lote-summary">
-      <div class="lote-row" style="color: #4ade80;">
-        <span>(+) Precio Total Venta (Lote):</span>
-        <span id="res-total-price" style="font-size: 16px; font-weight: bold;">$0.00</span>
+    <!-- SECCIÓN 2: MANO DE OBRA Y GASTOS -->
+    <div class="card">
+      <h2>⏱️ Mano de Obra y Servicios</h2>
+      
+      <div class="row">
+        <div style="flex: 1;">
+          <label>Tiempo Total (Minutos):</label>
+          <input type="number" id="time-min" value="30" oninput="calculate()">
+        </div>
+        <div style="flex: 1;">
+          <label>Valor Hora ($):</label>
+          <input type="number" step="0.5" id="hourly-rate" value="5.00" oninput="calculate()">
+        </div>
       </div>
-      <div class="lote-row" style="color: #ef4444;">
-        <span>(-) Costo Total Producción:</span>
-        <span id="res-total-cost">$0.00</span>
+
+      <label>Gastos Indirectos Totales (Luz, Desgaste, Empaque) ($):</label>
+      <input type="number" step="0.01" id="overhead-cost" value="0.50" oninput="calculate()">
+    </div>
+
+    <!-- SECCIÓN 3: MARGEN DE GANANCIA -->
+    <div class="card">
+      <h2>📈 Margen de Ganancia</h2>
+      <label>Porcentaje de Ganancia Deseado (%):</label>
+      <input type="number" id="profit-margin" value="50" oninput="calculate()">
+    </div>
+
+    <!-- RESUMEN DE RESULTADOS -->
+    <div class="result-box">
+      <!-- POR UNIDAD -->
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="title">Costo por Unidad</div>
+          <div class="val val-costo" id="res-unit-cost">$0.00</div>
+        </div>
+        <div class="result-item">
+          <div class="title">Precio Venta p/Unidad</div>
+          <div class="val val-precio" id="res-unit-price">$0.00</div>
+        </div>
       </div>
-      <div class="lote-row border-top" style="color: #f59e0b;">
-        <span>(=) GANANCIA NETA REFLEJADA:</span>
-        <span id="res-total-profit" style="font-size: 18px;">$0.00</span>
+
+      <!-- BALANCE TOTAL DEL LOTE -->
+      <div class="lote-summary">
+        <div class="lote-row" style="color: #4ade80;">
+          <span>(+) Precio Total Venta (Lote):</span>
+          <span id="res-total-price" style="font-size: 16px; font-weight: bold;">$0.00</span>
+        </div>
+        <div class="lote-row" style="color: #ef4444;">
+          <span>(-) Costo Total Producción:</span>
+          <span id="res-total-cost">$0.00</span>
+        </div>
+        <div class="lote-row border-top" style="color: #f59e0b;">
+          <span>(=) GANANCIA NETA REFLEJADA:</span>
+          <span id="res-total-profit" style="font-size: 18px;">$0.00</span>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
+    // ==========================================
+    // 🛡️ LISTA DE CLIENTES AUTORIZADOS
+    // Agrega aquí los IDs de los compradores
+    // ==========================================
+    const USUARIOS_AUTORIZADOS = [
+      "123456789", // Coloca tu ID numérico aquí para probar tú mismo
+      "987654321"  // ID de Cliente 1 (ejemplo)
+    ];
+
+    function verifyAccess() {
+      let userId = "";
+
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+        userId = String(window.Telegram.WebApp.initDataUnsafe.user.id);
+      }
+
+      const hasAccess = USUARIOS_AUTORIZADOS.includes(userId);
+
+      if (hasAccess) {
+        document.getElementById('app-content').style.display = 'block';
+        document.getElementById('access-denied').style.display = 'none';
+        calculate();
+      } else {
+        document.getElementById('app-content').style.display = 'none';
+        document.getElementById('access-denied').style.display = 'block';
+        document.getElementById('user-id-display').innerText = userId ? userId : "No detectado (fuera de Telegram)";
+      }
+    }
+
     function addMaterial() {
       const container = document.getElementById('materials-container');
       const div = document.createElement('div');
@@ -281,38 +355,30 @@
     }
 
     function calculate() {
-      // Cantidad de unidades
       const qty = Math.max(1, parseInt(document.getElementById('prod-qty').value) || 1);
 
-      // 1. Sumar materia prima
       let materialsTotal = 0;
       document.querySelectorAll('.mat-cost').forEach(input => {
         const val = parseFloat(input.value) || 0;
         materialsTotal += val;
       });
 
-      // Reflejar Subtotal Materia Prima
       document.getElementById('mat-subtotal').innerText = `$${materialsTotal.toFixed(2)}`;
 
-      // 2. Mano de obra
       const min = parseFloat(document.getElementById('time-min').value) || 0;
       const rate = parseFloat(document.getElementById('hourly-rate').value) || 0;
       const laborCost = (min / 60) * rate;
 
-      // 3. Gastos indirectos
       const overhead = parseFloat(document.getElementById('overhead-cost').value) || 0;
 
-      // Costo Total
       const totalCost = materialsTotal + laborCost + overhead;
       const unitCost = totalCost / qty;
 
-      // 4. Margen y Precios
       const marginPct = parseFloat(document.getElementById('profit-margin').value) || 0;
       const totalProfit = totalCost * (marginPct / 100);
       const totalPrice = totalCost + totalProfit;
       const unitPrice = totalPrice / qty;
 
-      // Renderizar valores en pantalla
       document.getElementById('res-unit-cost').innerText = `$${unitCost.toFixed(2)}`;
       document.getElementById('res-unit-price').innerText = `$${unitPrice.toFixed(2)}`;
 
@@ -321,13 +387,13 @@
       document.getElementById('res-total-profit').innerText = `$${totalProfit.toFixed(2)}`;
     }
 
-    // Inicializar cálculo
-    calculate();
-
+    // Inicializar app y validar acceso
     if (window.Telegram && window.Telegram.WebApp) {
       Telegram.WebApp.ready();
       Telegram.WebApp.expand();
     }
+
+    verifyAccess();
   </script>
 </body>
 </html>
