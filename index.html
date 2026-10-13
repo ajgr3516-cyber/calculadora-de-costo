@@ -310,21 +310,23 @@
   <script>
     // ==========================================
     // 🛡️ LISTA DE CLIENTES AUTORIZADOS
-    // Agrega aquí los IDs de los compradores
     // ==========================================
     const USUARIOS_AUTORIZADOS = [
-      "123456789", // Coloca tu ID numérico aquí para probar tú mismo
-      "987654321"  // ID de Cliente 1 (ejemplo)
+      "6009706656"
     ];
 
     function verifyAccess() {
       let userId = "";
 
       if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
-        userId = String(window.Telegram.WebApp.initDataUnsafe.user.id);
+        userId = String(window.Telegram.WebApp.initDataUnsafe.user.id).trim();
       }
 
-      const hasAccess = USUARIOS_AUTORIZADOS.includes(userId);
+      // Convertimos todos a texto plano para evitar errores de tipo
+      const listaAutorizados = USUARIOS_AUTORIZADOS.map(id => String(id).trim());
+      
+      // Validación estricta o tu ID directo de emergencia
+      const hasAccess = listaAutorizados.includes(userId) || userId === "6009706656";
 
       if (hasAccess) {
         document.getElementById('app-content').style.display = 'block';
