@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Costos & Precios</title>
+  <title>Calculadora de Costos Avanzada</title>
   
   <!-- Librerías de Telegram y Supabase -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -17,7 +17,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     body {
-      background-color: #0f172a;
+      background-color: #0b071e;
       color: #f8fafc;
       padding: 16px;
       padding-bottom: 40px;
@@ -39,114 +39,147 @@
       color: #94a3b8;
     }
 
-    /* Estilos de la Calculadora */
+    /* Encabezado */
     .header {
       text-align: center;
       margin-bottom: 20px;
+      padding: 10px 0;
     }
     .header h1 {
       font-size: 20px;
-      color: #38bdf8;
+      color: #ffffff;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
     }
-    .header p {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .card h2 {
-      font-size: 15px;
-      color: #f59e0b;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+
+    /* Tarjetas y Contenedores */
     label {
       display: block;
-      font-size: 12px;
+      font-size: 13px;
       color: #cbd5e1;
-      margin-top: 10px;
-      margin-bottom: 4px;
+      margin-top: 12px;
+      margin-bottom: 6px;
     }
+    
     input, select {
       width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #334155;
-      background: #0f172a;
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid #4c3d8a;
+      background: #171036;
       color: #fff;
       font-size: 14px;
+      outline: none;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.15);
     }
-    .row {
-      display: flex;
+    input:focus, select:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Sección de Materia Prima */
+    .section-title {
+      font-size: 16px;
+      color: #f8fafc;
+      font-weight: 700;
+      margin-bottom: 12px;
+      margin-top: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .mat-item {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.3fr 1fr 36px;
       gap: 6px;
       align-items: center;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
+      margin-bottom: 10px;
     }
-    .row input, .row select {
-      margin-top: 0;
-    }
-    .btn-add {
-      background: #38bdf8;
-      color: #0f172a;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .btn-del {
-      background: #ef4444;
-      color: #fff;
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    /* Resultados */
-    .result-box {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      border: 2px solid #38bdf8;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-    }
-    .result-item {
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px dashed #334155;
-    }
-    .result-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    .result-item .title {
-      font-size: 12px;
+
+    .mat-labels {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.3fr 1fr 36px;
+      gap: 6px;
+      font-size: 11px;
       color: #94a3b8;
+      margin-bottom: 4px;
     }
+
+    .btn-add {
+      background: #17253b;
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-add:hover {
+      background: #38bdf8;
+      color: #0b071e;
+    }
+
+    .btn-del {
+      background: transparent;
+      color: #ef4444;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      height: 100%;
+    }
+
+    .row-labor {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* Caja de Resultados Estilo Neón */
+    .result-box {
+      background: linear-gradient(135deg, #130c2e, #0b071e);
+      border: 2px solid #38bdf8;
+      border-radius: 16px;
+      padding: 20px 14px;
+      text-align: center;
+      margin-top: 24px;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+    }
+
+    .result-main-val {
+      font-size: 32px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 16px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      border-top: 1px solid rgba(56, 189, 248, 0.3);
+      padding-top: 14px;
+    }
+
+    .result-item .title {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
     .result-item .val {
-      font-size: 22px;
+      font-size: 18px;
       font-weight: bold;
     }
-    .result-item .subval {
-      font-size: 14px;
-      font-weight: bold;
-      margin-top: 2px;
-    }
+
     .val-costo { color: #f8fafc; }
-    .val-precio { color: #4ade80; }
     .val-ganancia { color: #f59e0b; }
+    .val-precio { color: #4ade80; }
   </style>
 </head>
 <body>
@@ -160,104 +193,89 @@
   <!-- INTERFAZ DE LA CALCULADORA -->
   <div id="app" style="display: none;">
     <div class="header">
-      <h1>🧮 Calculadora de Costos & Precios</h1>
-      <p>Calcula el costo real de tu producto y define tu margen de ganancia sin errores.</p>
+      <h1>📊 CALCULADORA DE COSTOS AVANZADA</h1>
     </div>
 
-    <!-- NOMBRE Y CANTIDAD DEL PRODUCTO -->
-    <div class="card">
-      <label>Nombre del Producto / Servicio:</label>
+    <!-- NOMBRE DEL PRODUCTO -->
+    <div>
+      <label>Nombre del Producto</label>
       <input type="text" id="prod-name" placeholder="">
-
-      <label>Cantidad de Productos a Fabricar (Unidades):</label>
-      <input type="number" id="prod-qty" value="1" min="1" oninput="calculate()">
     </div>
 
-    <!-- SECCIÓN 1: MATERIALES / INSUMOS -->
-    <div class="card">
-      <h2>
-        📦 Materia Prima e Insumos
-        <button class="btn-add" onclick="addMaterial()">+ Agregar Item</button>
-      </h2>
-      <div id="materials-container">
-        <!-- Fila 1 -->
-        <div class="row mat-item">
-          <input type="text" placeholder="" class="mat-desc" style="flex: 2; min-width: 120px;">
-          <input type="number" step="0.01" placeholder="Cant." class="mat-qty" style="flex: 1; min-width: 60px;" value="1" oninput="calculate()">
-          <select class="mat-unit" style="flex: 1.2; min-width: 90px;">
-            <option value="Unidades">Unidades</option>
-            <option value="Kg">Kg (Kilogramos)</option>
-            <option value="Gr">Gr (Gramos)</option>
-            <option value="L">L (Litros)</option>
-            <option value="ml">ml (Mililitros)</option>
-          </select>
-          <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1; min-width: 70px;" oninput="calculate()">
-          <button class="btn-del" onclick="removeRow(this)">✕</button>
-        </div>
-        <!-- Fila 2 -->
-        <div class="row mat-item">
-          <input type="text" placeholder="" class="mat-desc" style="flex: 2; min-width: 120px;">
-          <input type="number" step="0.01" placeholder="Cant." class="mat-qty" style="flex: 1; min-width: 60px;" value="1" oninput="calculate()">
-          <select class="mat-unit" style="flex: 1.2; min-width: 90px;">
-            <option value="Unidades">Unidades</option>
-            <option value="Kg">Kg (Kilogramos)</option>
-            <option value="Gr">Gr (Gramos)</option>
-            <option value="L">L (Litros)</option>
-            <option value="ml">ml (Mililitros)</option>
-          </select>
-          <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1; min-width: 70px;" oninput="calculate()">
-          <button class="btn-del" onclick="removeRow(this)">✕</button>
-        </div>
+    <!-- GESTIÓN DE MATERIA PRIMA -->
+    <div class="section-title">GESTIÓN DE MATERIA PRIMA</div>
+    
+    <div class="mat-labels">
+      <span>Descripción del Ítem</span>
+      <span>$ Costo</span>
+      <span>Cantidad</span>
+      <span>Unidad</span>
+      <span></span>
+    </div>
+
+    <div id="materials-container">
+      <!-- Fila 1 -->
+      <div class="mat-item">
+        <input type="text" placeholder="" class="mat-desc">
+        <input type="number" step="0.01" placeholder="$" class="mat-cost" oninput="calculate()">
+        <input type="number" step="0.01" value="1" class="mat-qty" oninput="calculate()">
+        <select class="mat-unit" onchange="calculate()">
+          <option value="Unidades">Unidades</option>
+          <option value="Kg">Kg</option>
+          <option value="Gr">Gr</option>
+          <option value="L">L</option>
+          <option value="ml">ml</option>
+        </select>
+        <button class="btn-del" onclick="removeRow(this)">✕</button>
+      </div>
+
+      <!-- Fila 2 -->
+      <div class="mat-item">
+        <input type="text" placeholder="" class="mat-desc">
+        <input type="number" step="0.01" placeholder="$" class="mat-cost" oninput="calculate()">
+        <input type="number" step="0.01" value="1" class="mat-qty" oninput="calculate()">
+        <select class="mat-unit" onchange="calculate()">
+          <option value="Unidades">Unidades</option>
+          <option value="Kg">Kg</option>
+          <option value="Gr">Gr</option>
+          <option value="L">L</option>
+          <option value="ml">ml</option>
+        </select>
+        <button class="btn-del" onclick="removeRow(this)">✕</button>
       </div>
     </div>
 
-    <!-- SECCIÓN 2: MANO DE OBRA Y GASTOS -->
-    <div class="card">
-      <h2>⏱️ Mano de Obra y Servicios</h2>
-      
-      <div class="row">
-        <div style="flex: 1;">
-          <label>Tiempo de Elaboración Total (Minutos):</label>
-          <input type="number" id="time-min" value="30" oninput="calculate()">
-        </div>
-        <div style="flex: 1;">
-          <label>Valor Hora Trabajada ($):</label>
-          <input type="number" step="0.5" id="hourly-rate" value="5.00" oninput="calculate()">
-        </div>
+    <button class="btn-add" onclick="addMaterial()">+ Agregar Ítem</button>
+
+    <!-- MANO DE OBRA Y GASTOS -->
+    <div class="row-labor" style="margin-top: 16px;">
+      <div style="flex: 1;">
+        <label>Mano de Obra y Gastos ($)</label>
+        <input type="number" step="0.01" id="overhead-cost" value="0.00" oninput="calculate()">
       </div>
-
-      <label>Gastos Indirectos Totales (Luz, Desgaste, Empaque) ($):</label>
-      <input type="number" step="0.01" id="overhead-cost" value="0.50" oninput="calculate()">
+      <div style="flex: 1;">
+        <label>Margen de Ganancia (%)</label>
+        <input type="number" step="1" id="profit-margin" value="50" oninput="calculate()">
+      </div>
     </div>
 
-    <!-- SECCIÓN 3: MARGEN DE GANANCIA -->
-    <div class="card">
-      <h2>📈 Margen de Ganancia Deseado</h2>
-      <label>Porcentaje de Ganancia (%):</label>
-      <input type="number" id="profit-margin" value="50" oninput="calculate()">
-    </div>
-
-    <!-- RESUMEN DE RESULTADOS -->
+    <!-- CAJA DE RESULTADOS ESTILO NEÓN -->
     <div class="result-box">
-      <!-- COSTO TOTAL -->
-      <div class="result-item">
-        <div class="title">Costo Total de Producción</div>
-        <div class="val val-costo" id="res-cost">$0.00</div>
-        <div class="subval val-costo" id="res-cost-unit" style="color: #38bdf8;">Costo Individual: $0.00 / ud</div>
-      </div>
+      <div class="result-main-val" id="res-price">$ 0.00</div>
       
-      <!-- GANANCIA -->
-      <div class="result-item">
-        <div class="title">Ganancia Neta (Dólares)</div>
-        <div class="val val-ganancia" id="res-profit">$0.00</div>
-        <div class="subval val-ganancia" id="res-profit-unit">Ganancia Individual: $0.00 / ud</div>
-      </div>
-
-      <!-- PRECIO DE VENTA -->
-      <div class="result-item">
-        <div class="title" style="color: #4ade80; font-weight: bold;">PRECIO DE VENTA SUGERIDO</div>
-        <div class="val val-precio" id="res-price">$0.00</div>
-        <div class="subval val-precio" id="res-price-unit" style="font-size: 16px;">Precio Individual: $0.00 / ud</div>
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="title">Costo Total</div>
+          <div class="val val-costo" id="res-cost">$0.00</div>
+        </div>
+        <div class="result-item">
+          <div class="title">Ganancia</div>
+          <div class="val val-ganancia" id="res-profit">$0.00</div>
+        </div>
+        <div class="result-item">
+          <div class="title">Precio Venta</div>
+          <div class="val val-precio" id="res-price-sub">$0.00</div>
+        </div>
       </div>
     </div>
   </div>
@@ -327,18 +345,18 @@
     function addMaterial() {
       const container = document.getElementById('materials-container');
       const div = document.createElement('div');
-      div.className = 'row mat-item';
+      div.className = 'mat-item';
       div.innerHTML = `
-        <input type="text" placeholder="" class="mat-desc" style="flex: 2; min-width: 120px;">
-        <input type="number" step="0.01" placeholder="Cant." class="mat-qty" style="flex: 1; min-width: 60px;" value="1" oninput="calculate()">
-        <select class="mat-unit" style="flex: 1.2; min-width: 90px;">
+        <input type="text" placeholder="" class="mat-desc">
+        <input type="number" step="0.01" placeholder="$" class="mat-cost" oninput="calculate()">
+        <input type="number" step="0.01" value="1" class="mat-qty" oninput="calculate()">
+        <select class="mat-unit" onchange="calculate()">
           <option value="Unidades">Unidades</option>
-          <option value="Kg">Kg (Kilogramos)</option>
-          <option value="Gr">Gr (Gramos)</option>
-          <option value="L">L (Litros)</option>
-          <option value="ml">ml (Mililitros)</option>
+          <option value="Kg">Kg</option>
+          <option value="Gr">Gr</option>
+          <option value="L">L</option>
+          <option value="ml">ml</option>
         </select>
-        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1; min-width: 70px;" oninput="calculate()">
         <button class="btn-del" onclick="removeRow(this)">✕</button>
       `;
       container.appendChild(div);
@@ -350,48 +368,30 @@
     }
 
     function calculate() {
-      // 1. Cantidad de productos a fabricar
-      const prodUnits = parseFloat(document.getElementById('prod-qty').value) || 1;
-
-      // 2. Sumar materia prima e insumos
+      // 1. Sumar materia prima e insumos (Costo x Cantidad si aplica)
       let materialsTotal = 0;
       document.querySelectorAll('.mat-item').forEach(row => {
         const cost = parseFloat(row.querySelector('.mat-cost').value) || 0;
-        materialsTotal += cost;
+        const qty = parseFloat(row.querySelector('.mat-qty').value) || 1;
+        materialsTotal += (cost * qty);
       });
 
-      // 3. Mano de obra
-      const min = parseFloat(document.getElementById('time-min').value) || 0;
-      const rate = parseFloat(document.getElementById('hourly-rate').value) || 0;
-      const laborCost = (min / 60) * rate;
-
-      // 4. Gastos indirectos
+      // 2. Mano de obra y gastos
       const overhead = parseFloat(document.getElementById('overhead-cost').value) || 0;
       
       // Costo Total
-      const totalCost = materialsTotal + laborCost + overhead;
+      const totalCost = materialsTotal + overhead;
 
-      // Margen de ganancia y Precio de Venta Total
+      // 3. Margen de ganancia y Precio de Venta
       const marginPct = parseFloat(document.getElementById('profit-margin').value) || 0;
-      const sellingPrice = totalCost * (1 + (marginPct / 100));
+      const profit = totalCost * (marginPct / 100);
+      const sellingPrice = totalCost + profit;
 
-      // Ganancia neta total en dólares
-      const profitDollar = sellingPrice - totalCost;
-
-      // Cálculos individuales por unidad
-      const unitCost = totalCost / prodUnits;
-      const unitProfit = profitDollar / prodUnits;
-      const unitPrice = sellingPrice / prodUnits;
-
-      // Renderizar resultados Totales e Individuales
+      // Renderizar resultados en la caja neón
       document.getElementById('res-cost').innerText = `$${totalCost.toFixed(2)}`;
-      document.getElementById('res-cost-unit').innerText = `Costo Individual: $${unitCost.toFixed(2)} / ud`;
-
-      document.getElementById('res-profit').innerText = `$${profitDollar.toFixed(2)} (${marginPct}%)`;
-      document.getElementById('res-profit-unit').innerText = `Ganancia Individual: $${unitProfit.toFixed(2)} / ud`;
-
-      document.getElementById('res-price').innerText = `$${sellingPrice.toFixed(2)}`;
-      document.getElementById('res-price-unit').innerText = `Precio Individual: $${unitPrice.toFixed(2)} / ud`;
+      document.getElementById('res-profit').innerText = `$${profit.toFixed(2)}`;
+      document.getElementById('res-price').innerText = `$ ${sellingPrice.toFixed(2)}`;
+      document.getElementById('res-price-sub').innerText = `$${sellingPrice.toFixed(2)}`;
     }
 
     // Iniciar verificación al cargar
