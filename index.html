@@ -3,88 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Costo</title>
+  <title>Calculadora de Costos</title>
 
-  <!-- Librerías de Telegram y Supabase -->
+  <!-- Librerías indispensables de Telegram y Supabase -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px;">
 
-  <!-- Pantalla de verificación mientras valida el ID -->
+  <!-- PANTALLA DE CARGA Y MENSAJES DE ESTADO -->
   <div id="loading" style="text-align: center; margin-top: 50px;">
-    <h2>Verificando licencia...</h2>
-    <p style="color: gray;">Por favor espera un momento.</p>
+    <h2>Cargando aplicación...</h2>
+    <p id="loading-text" style="color: gray;">Verificando acceso en Telegram...</p>
   </div>
 
-  <!-- Contenedor donde va el HTML de tu calculadora original -->
+  <!-- CONTENEDOR PRINCIPAL DE TU CALCULADORA -->
   <div id="app" style="display: none;">
-
-    <!-- ======================================================= -->
-    <!-- PEGA AQUÍ ABAJO EL CÓDIGO HTML Y CSS DE TU CALCULADORA ORIGINAL -->
-    <!-- ======================================================= -->
-
     
+    <!-- PEGA AQUÍ TU CALCULADORA ORIGINAL SI LA TIENES A LA MANO -->
+    <h1>Mi Calculadora</h1>
+    <p>Licencia validada exitosamente.</p>
 
-    <!-- ======================================================= -->
   </div>
 
   <script>
-    // Configuración con tu clave anon tradicional
+    // Parámetros de conexión a Supabase
     const SUPABASE_URL = "https://vjuwvihrtweeyobvhvce.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdXd2aWhydHdlZXlvYnZodmNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NDE1NzIsImV4cCI6MjEwNzUxNzU3Mn0.0E8-2tXyCDrBVEDPU9yVDrJNpS2rLkghy0-HEXchbGo";
 
-    const { createClient } = supabase;
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    async function verificarLicencia() {
-      const loadingDiv = document.getElementById("loading");
+    async function iniciar() {
+      const loading = document.getElementById("loading");
+      const loadingText = document.getElementById("loading-text");
+      const app = document.getElementById("app");
 
       try {
-        window.Telegram.WebApp.ready();
-        const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+        // 1. Inicializar SDK de Telegram
+        if (window.Telegram && window.Telegram.WebApp) {
+          window.Telegram.WebApp.ready();
+          window.Telegram.WebApp.expand();
+        }
+
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
         if (!tgUser || !tgUser.id) {
-          loadingDiv.innerHTML = `
-            <h2 style="color: #d9534f;">⚠️ Acceso Denegado</h2>
-            <p>Abre esta aplicación directamente desde Telegram.</p>
+          loading.innerHTML = `
+            <h2 style="color: #d9534f;">⚠️ Acceso no detectado</h2>
+            <p>Por favor abre esta aplicación directamente desde el chat de Telegram.</p>
           `;
           return;
         }
 
         const telegramId = String(tgUser.id);
+        loadingText.innerText = "Consultando base de datos...";
 
+        // 2. Conectar a Supabase
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 3. Consultar la tabla
         const { data, error } = await supabaseClient
           .from('usuarios_autorizados')
           .select('telegram_id')
           .eq('telegram_id', telegramId);
 
         if (error) {
-          loadingDiv.innerHTML = `
-            <h2 style="color: #d9534f;">❌ Error de conexión</h2>
+          loading.innerHTML = `
+            <h2 style="color: #d9534f;">❌ Error de base de datos</h2>
             <p>${error.message}</p>
           `;
           return;
         }
 
+        // 4. Mostrar o Denegar
         if (data && data.length > 0) {
-          loadingDiv.style.display = "none";
-          document.getElementById("app").style.display = "block";
+          loading.style.display = "none";
+          app.style.display = "block";
         } else {
-          loadingDiv.innerHTML = `
-            <h2 style="color: #d9534f;">❌ Sin Licencia Activa</h2>
-            <p>Tu ID (<strong>${telegramId}</strong>) no está registrado.</p>
+          loading.innerHTML = `
+            <h2 style="color: #d9534f;">❌ Acceso Denegado</h2>
+            <p>El ID <strong>${telegramId}</strong> no tiene una licencia activa.</p>
           `;
         }
+
       } catch (err) {
-        loadingDiv.innerHTML = `
-          <h2 style="color: #d9534f;">⚠️ Error Crítico</h2>
-          <p>Ocurrió un problema al validar tu sesión.</p>
+        loading.innerHTML = `
+          <h2 style="color: #d9534f;">⚠️ Error inesperado</h2>
+          <p>${err.message || err.toString()}</p>
         `;
       }
     }
 
-    document.addEventListener("DOMContentLoaded", verificarLicencia);
+    // Ejecutar al cargar la página
+    window.addEventListener("DOMContentLoaded", iniciar);
   </script>
 </body>
 </html>
