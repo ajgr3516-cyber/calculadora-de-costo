@@ -3,27 +3,244 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Costo</title>
+  <title>Calculadora de Costos - Sublimación</title>
 
-  <!-- Librerías de Telegram y Supabase -->
+  <!-- Telegram WebApp SDK & Supabase JS SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --primary: #0088cc;
+      --primary-hover: #006699;
+      --text: #333333;
+      --text-muted: #666666;
+      --border: #e0e0e0;
+      --success-bg: #e8f5e9;
+      --success-text: #2e7d32;
+      --danger-bg: #ffebee;
+      --danger-text: #c62828;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* Estado de Carga */
+    #loading {
+      text-align: center;
+      padding: 30px 10px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Mensajes de Estado */
+    .status-card {
+      text-align: center;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .status-card.error {
+      background-color: var(--danger-bg);
+      color: var(--danger-text);
+    }
+
+    /* Formulario de la Calculadora */
+    h2 {
+      margin-top: 0;
+      color: var(--primary);
+      font-size: 1.3rem;
+      text-align: center;
+      border-bottom: 2px solid var(--bg-color);
+      padding-bottom: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row .form-group {
+      flex: 1;
+    }
+
+    button {
+      width: 100%;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    /* Resultados */
+    #resultado {
+      margin-top: 20px;
+      background: var(--bg-color);
+      border-radius: 8px;
+      padding: 16px;
+      display: none;
+    }
+
+    .res-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .res-item.total {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--primary);
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+  </style>
 </head>
-<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px;">
+<body>
 
-  <!-- Pantalla de carga / verificación -->
-  <div id="loading" style="text-align: center; margin-top: 50px;">
-    <h2>Verificando licencia...</h2>
-    <p style="color: gray;">Por favor espera un momento.</p>
-  </div>
+  <div class="container">
+    <!-- Estado de carga / verificación -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <h3>Verificando licencia...</h3>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Validando credenciales en la base de datos.</p>
+    </div>
 
-  <!-- Contenedor principal de tu Calculadora -->
-  <div id="app" style="display: none;">
-    <!-- ========================================================= -->
-    <!-- AQUÍ VA TODO EL CÓDIGO HTML DE TU CALCULADORA ACTUAL -->
-    <h1>Mi Calculadora de Costo</h1>
-    <p>Bienvenido. Tu licencia está activa.</p>
-    <!-- ========================================================= -->
+    <!-- Contenedor Principal (Calculadora) -->
+    <div id="app" style="display: none;">
+      <h2>Calculadora de Sublimación</h2>
+      <form id="calcForm">
+        
+        <div class="form-group">
+          <label for="producto">Costo del Blanco / Producto ($):</label>
+          <input type="number" id="producto" step="0.01" placeholder="Ej: 2.50 (Franela, Taza, etc.)" required>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label for="papel">Tinta + Papel ($):</label>
+            <input type="number" id="papel" step="0.01" value="0.30" required>
+          </div>
+
+          <div class="form-group">
+            <label for="empaque">Empaque / Sticker ($):</label>
+            <input type="number" id="empaque" step="0.01" value="0.20" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label for="tiempo">Mano de obra ($):</label>
+            <input type="number" id="tiempo" step="0.01" value="0.50" required>
+          </div>
+
+          <div class="form-group">
+            <label for="ganancia">Ganancia (%):</label>
+            <input type="number" id="ganancia" value="100" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cantidad">Cantidad de Unidades:</label>
+          <input type="number" id="cantidad" value="1" min="1" required>
+        </div>
+
+        <button type="button" onclick="calcularCosto()">Calcular Precio</button>
+      </form>
+
+      <!-- Panel de Resultados -->
+      <div id="resultado">
+        <div class="res-item">
+          <span>Costo Materiales Unitario:</span>
+          <span id="costoMatUnit">$0.00</span>
+        </div>
+        <div class="res-item">
+          <span>Costo Total Producción Unitario:</span>
+          <span id="costoTotalUnit">$0.00</span>
+        </div>
+        <div class="res-item">
+          <span>Ganancia por Unidad:</span>
+          <span id="gananciaUnit">$0.00</span>
+        </div>
+        <div class="res-item total">
+          <span>Precio Venta Unitario:</span>
+          <span id="precioVentaUnit">$0.00</span>
+        </div>
+        <div class="res-item total" style="color: #2e7d32; font-size: 1rem;">
+          <span>Total Pedido (<span id="cantTotal">1</span> unids):</span>
+          <span id="precioTotalPedido">$0.00</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -38,54 +255,82 @@
       const loadingDiv = document.getElementById("loading");
 
       try {
-        // Inicializar SDK de Telegram
+        // Inicializar SDK de Telegram WebApp
         window.Telegram.WebApp.ready();
         const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
 
         if (!tgUser || !tgUser.id) {
+          loadingDiv.className = "status-card error";
           loadingDiv.innerHTML = `
-            <h2 style="color: #d9534f;">⚠️ Acceso Denegado</h2>
-            <p>Por favor abre esta aplicación directamente desde Telegram.</p>
+            <h3>⚠️ Acceso Denegado</h3>
+            <p>Abre esta aplicación directamente desde Telegram.</p>
           `;
           return;
         }
 
         const telegramId = String(tgUser.id);
 
-        // Consultar la tabla en Supabase
+        // Consultar usuario en la tabla
         const { data, error } = await supabaseClient
           .from('usuarios_autorizados')
           .select('telegram_id')
           .eq('telegram_id', telegramId);
 
         if (error) {
-          console.error("Error al consultar Supabase:", error);
+          console.error("Error en Supabase:", error);
+          loadingDiv.className = "status-card error";
           loadingDiv.innerHTML = `
-            <h2 style="color: #d9534f;">❌ Error de conexión</h2>
+            <h3>❌ Error de Conexión</h3>
             <p>${error.message}</p>
           `;
           return;
         }
 
-        // Si el usuario existe en la tabla
         if (data && data.length > 0) {
+          // Licencia autorizada
           loadingDiv.style.display = "none";
           document.getElementById("app").style.display = "block";
         } else {
           // Usuario no autorizado
+          loadingDiv.className = "status-card error";
           loadingDiv.innerHTML = `
-            <h2 style="color: #d9534f;">❌ Sin Licencia Activa</h2>
-            <p>Tu ID (<strong>${telegramId}</strong>) no está registrado.</p>
-            <p>Contacta al administrador para activar tu acceso.</p>
+            <h3>❌ Licencia No Encontrada</h3>
+            <p>Tu ID (<strong>${telegramId}</strong>) no tiene acceso activo.</p>
+            <p style="font-size: 0.8rem;">Contacta al administrador para activar tu licencia.</p>
           `;
         }
       } catch (err) {
-        console.error("Error inesperado:", err);
+        console.error("Error crítico:", err);
+        loadingDiv.className = "status-card error";
         loadingDiv.innerHTML = `
-          <h2 style="color: #d9534f;">⚠️ Error Crítico</h2>
-          <p>Ocurrió un problema al validar tu sesión.</p>
+          <h3>⚠️ Error al iniciar</h3>
+          <p>Ocurrió un problema inesperado al validar el acceso.</p>
         `;
       }
+    }
+
+    function calcularCosto() {
+      const producto = parseFloat(document.getElementById("producto").value) || 0;
+      const papel = parseFloat(document.getElementById("papel").value) || 0;
+      const empaque = parseFloat(document.getElementById("empaque").value) || 0;
+      const tiempo = parseFloat(document.getElementById("tiempo").value) || 0;
+      const gananciaPorcentaje = parseFloat(document.getElementById("ganancia").value) || 0;
+      const cantidad = parseInt(document.getElementById("cantidad").value) || 1;
+
+      const costoMateriales = producto + papel + empaque;
+      const costoTotalUnitario = costoMateriales + tiempo;
+      const gananciaUnidad = costoTotalUnitario * (gananciaPorcentaje / 100);
+      const precioVentaUnitario = costoTotalUnitario + gananciaUnidad;
+      const precioTotalPedido = precioVentaUnitario * cantidad;
+
+      document.getElementById("costoMatUnit").innerText = "$" + costoMateriales.toFixed(2);
+      document.getElementById("costoTotalUnit").innerText = "$" + costoTotalUnitario.toFixed(2);
+      document.getElementById("gananciaUnit").innerText = "$" + gananciaUnidad.toFixed(2);
+      document.getElementById("precioVentaUnit").innerText = "$" + precioVentaUnitario.toFixed(2);
+      document.getElementById("cantTotal").innerText = cantidad;
+      document.getElementById("precioTotalPedido").innerText = "$" + precioTotalPedido.toFixed(2);
+
+      document.getElementById("resultado").style.display = "block";
     }
 
     document.addEventListener("DOMContentLoaded", verificarLicencia);
