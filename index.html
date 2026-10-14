@@ -39,7 +39,7 @@
       color: #94a3b8;
     }
 
-    /* Estilos Originales de la Calculadora */
+    /* Estilos de la Calculadora */
     .header {
       text-align: center;
       margin-bottom: 20px;
@@ -86,11 +86,12 @@
     }
     .row {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
       margin-bottom: 8px;
+      flex-wrap: wrap;
     }
-    .row input {
+    .row input, .row select {
       margin-top: 0;
     }
     .btn-add {
@@ -157,7 +158,7 @@
     <p>Conectando con la base de datos de autorización.</p>
   </div>
 
-  <!-- INTERFAZ ORIGINAL DE LA CALCULADORA -->
+  <!-- INTERFAZ DE LA CALCULADORA -->
   <div id="app" style="display: none;">
     <div class="header">
       <h1>🧮 Calculadora de Costos & Precios</h1>
@@ -167,7 +168,7 @@
     <!-- NOMBRE DEL PRODUCTO -->
     <div class="card">
       <label>Nombre del Producto / Servicio:</label>
-      <input type="text" id="prod-name" placeholder="Ej: Franela Sublimada A3 / Taza Personalizada">
+      <input type="text" id="prod-name" placeholder="">
     </div>
 
     <!-- SECCIÓN 1: MATERIALES / INSUMOS -->
@@ -177,14 +178,32 @@
         <button class="btn-add" onclick="addMaterial()">+ Agregar Item</button>
       </h2>
       <div id="materials-container">
+        <!-- Fila 1 -->
         <div class="row mat-item">
-          <input type="text" placeholder="Ej: Franela blanca" class="mat-desc" style="flex: 2;">
-          <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+          <input type="text" placeholder="" class="mat-desc" style="flex: 2; min-width: 120px;">
+          <input type="number" step="0.01" placeholder="Cant." class="mat-qty" style="flex: 1; min-width: 60px;" value="1" oninput="calculate()">
+          <select class="mat-unit" style="flex: 1.2; min-width: 90px;">
+            <option value="Unidades">Unidades</option>
+            <option value="Kg">Kg (Kilogramos)</option>
+            <option value="Gr">Gr (Gramos)</option>
+            <option value="L">L (Litros)</option>
+            <option value="ml">ml (Mililitros)</option>
+          </select>
+          <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1; min-width: 70px;" oninput="calculate()">
           <button class="btn-del" onclick="removeRow(this)">✕</button>
         </div>
+        <!-- Fila 2 -->
         <div class="row mat-item">
-          <input type="text" placeholder="Ej: Tinta y Papel A3" class="mat-desc" style="flex: 2;">
-          <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+          <input type="text" placeholder="" class="mat-desc" style="flex: 2; min-width: 120px;">
+          <input type="number" step="0.01" placeholder="Cant." class="mat-qty" style="flex: 1; min-width: 60px;" value="1" oninput="calculate()">
+          <select class="mat-unit" style="flex: 1.2; min-width: 90px;">
+            <option value="Unidades">Unidades</option>
+            <option value="Kg">Kg (Kilogramos)</option>
+            <option value="Gr">Gr (Gramos)</option>
+            <option value="L">L (Litros)</option>
+            <option value="ml">ml (Mililitros)</option>
+          </select>
+          <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1; min-width: 70px;" oninput="calculate()">
           <button class="btn-del" onclick="removeRow(this)">✕</button>
         </div>
       </div>
@@ -283,7 +302,7 @@
         if (data && data.length > 0) {
           loading.style.display = "none";
           app.style.display = "block";
-          calculate(); // Calcular valores iniciales
+          calculate();
         } else {
           loading.innerHTML = `
             <h2 style="color: #ef4444;">❌ Sin Licencia Activa</h2>
@@ -299,14 +318,21 @@
       }
     }
 
-    // Funciones de la Calculadora Original con resta de costo total para la ganancia en dólares
     function addMaterial() {
       const container = document.getElementById('materials-container');
       const div = document.createElement('div');
       div.className = 'row mat-item';
       div.innerHTML = `
-        <input type="text" placeholder="Otro insumo/empaque" class="mat-desc" style="flex: 2;">
-        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1;" oninput="calculate()">
+        <input type="text" placeholder="" class="mat-desc" style="flex: 2; min-width: 120px;">
+        <input type="number" step="0.01" placeholder="Cant." class="mat-qty" style="flex: 1; min-width: 60px;" value="1" oninput="calculate()">
+        <select class="mat-unit" style="flex: 1.2; min-width: 90px;">
+          <option value="Unidades">Unidades</option>
+          <option value="Kg">Kg (Kilogramos)</option>
+          <option value="Gr">Gr (Gramos)</option>
+          <option value="L">L (Litros)</option>
+          <option value="ml">ml (Mililitros)</option>
+        </select>
+        <input type="number" step="0.01" placeholder="Costo ($)" class="mat-cost" style="flex: 1; min-width: 70px;" oninput="calculate()">
         <button class="btn-del" onclick="removeRow(this)">✕</button>
       `;
       container.appendChild(div);
@@ -318,32 +344,32 @@
     }
 
     function calculate() {
-      // 1. Sumar materia prima e insumos
+      // Sumar materia prima e insumos (Monto x Cantidad si aplica)
       let materialsTotal = 0;
-      document.querySelectorAll('.mat-cost').forEach(input => {
-        const val = parseFloat(input.value) || 0;
-        materialsTotal += val;
+      document.querySelectorAll('.mat-item').forEach(row => {
+        const cost = parseFloat(row.querySelector('.mat-cost').value) || 0;
+        materialsTotal += cost;
       });
 
-      // 2. Mano de obra
+      // Mano de obra
       const min = parseFloat(document.getElementById('time-min').value) || 0;
       const rate = parseFloat(document.getElementById('hourly-rate').value) || 0;
       const laborCost = (min / 60) * rate;
 
-      // 3. Gastos indirectos
+      // Gastos indirectos
       const overhead = parseFloat(document.getElementById('overhead-cost').value) || 0;
       
       // Costo Total de Producción
       const totalCost = materialsTotal + laborCost + overhead;
 
-      // 4. Margen de ganancia y Precio de Venta
+      // Margen de ganancia y Precio de Venta
       const marginPct = parseFloat(document.getElementById('profit-margin').value) || 0;
       const sellingPrice = totalCost * (1 + (marginPct / 100));
 
-      // 5. Ganancia neta exacta en dólares (Precio de Venta - Costo Total)
+      // Ganancia neta exacta en dólares
       const profitDollar = sellingPrice - totalCost;
 
-      // Renderizar en pantalla
+      // Renderizar resultados
       document.getElementById('res-cost').innerText = `$${totalCost.toFixed(2)}`;
       document.getElementById('res-profit').innerText = `$${profitDollar.toFixed(2)} (${marginPct}%)`;
       document.getElementById('res-price').innerText = `$${sellingPrice.toFixed(2)}`;
