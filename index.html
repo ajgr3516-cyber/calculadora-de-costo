@@ -22,12 +22,12 @@
 
     .container {
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
     }
 
     h1 {
       text-align: center;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 800;
       letter-spacing: 0.5px;
       margin-bottom: 25px;
@@ -39,7 +39,7 @@
     }
 
     .section-title {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 700;
       color: #e2e8f0;
       text-transform: uppercase;
@@ -74,7 +74,7 @@
       border-color: #00d2ff;
     }
 
-    /* Fila de Headers para la lista */
+    /* Encabezados de la tabla */
     .item-headers {
       display: grid;
       grid-template-columns: 2.2fr 1fr 1fr 1fr 1.2fr 30px;
@@ -153,8 +153,14 @@
       border: 1.5px solid #00d2ff;
       border-radius: 20px;
       padding: 24px;
-      text-align: center;
       box-shadow: 0 0 20px rgba(0, 210, 255, 0.15);
+    }
+
+    .main-price-box {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #1a224d;
+      padding-bottom: 16px;
     }
 
     .main-price-title {
@@ -162,45 +168,42 @@
       color: #a0aec0;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .main-price {
-      font-size: 2.5rem;
+      font-size: 2.6rem;
       font-weight: 800;
-      color: #ffffff;
-      margin-bottom: 20px;
+      color: #2ed573;
     }
 
-    .results-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      border-top: 1px solid #1a224d;
-      padding-top: 16px;
-    }
-
-    .result-item {
+    /* Lista detallada final */
+    .summary-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 12px;
     }
 
-    .result-label {
-      font-size: 0.68rem;
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+    }
+
+    .summary-label {
       color: #a0aec0;
-      text-transform: uppercase;
+    }
+
+    .summary-value {
       font-weight: 700;
+      font-size: 1rem;
     }
 
-    .result-val {
-      font-size: 1.05rem;
-      font-weight: 800;
-    }
-
-    .val-cost { color: #ffffff; }
-    .val-profit { color: #ffb703; }
-    .val-price { color: #2ed573; }
+    .highlight-blue { color: #00d2ff; }
+    .highlight-white { color: #ffffff; }
+    .highlight-yellow { color: #ffb703; }
+    .highlight-green { color: #2ed573; }
   </style>
 </head>
 <body>
@@ -218,7 +221,7 @@
     <div class="section-title">GESTIÓN DE MATERIA PRIMA</div>
     
     <div class="item-headers">
-      <span>Descripción del Ítem</span>
+      <span>Materia Prima</span>
       <span>$ Costo</span>
       <span>Cantidad</span>
       <span>Unidad</span>
@@ -230,7 +233,7 @@
 
     <button type="button" class="btn-add" onclick="addItem()">+ Agregar Ítem</button>
 
-    <!-- Gastos Adicionales y Ganancia -->
+    <!-- Gastos Adicionales y Margen -->
     <div class="grid-2">
       <div class="form-group" style="margin: 0;">
         <label>Mano de Obra y Gastos ($)</label>
@@ -242,30 +245,43 @@
       </div>
     </div>
 
-    <!-- Tarjeta Resultante -->
+    <!-- Tarjeta de Desglose Final -->
     <div class="results-card">
-      <div class="main-price-title">PRECIO SUGERIDO DE VENTA</div>
-      <div class="main-price" id="displayMainPrice">$ 0.00</div>
+      <div class="main-price-box">
+        <div class="main-price-title">PRECIO DE VENTA SUGERIDO</div>
+        <div class="main-price" id="displaySalePrice">$ 0.00</div>
+      </div>
 
-      <div class="results-grid">
-        <div class="result-item">
-          <span class="result-label">COSTO TOTAL</span>
-          <span class="result-val val-cost" id="displayTotalCost">$0.00</span>
+      <div class="summary-list">
+        <div class="summary-row">
+          <span class="summary-label">Total en Materia Prima:</span>
+          <span class="summary-value highlight-blue" id="displayRawMaterials">$0.00</span>
         </div>
-        <div class="result-item">
-          <span class="result-label">GANANCIA</span>
-          <span class="result-val val-profit" id="displayProfit">$0.00</span>
+        
+        <div class="summary-row">
+          <span class="summary-label">Mano de Obra / Gastos:</span>
+          <span class="summary-value highlight-white" id="displayLabor">$0.00</span>
         </div>
-        <div class="result-item">
-          <span class="result-label">PRECIO VENTA</span>
-          <span class="result-val val-price" id="displaySalePrice">$0.00</span>
+
+        <div class="summary-row" style="border-top: 1px dashed #232044; padding-top: 10px;">
+          <span class="summary-label" style="font-weight: 700; color: #ffffff;">COSTO TOTAL DEL PRODUCTO:</span>
+          <span class="summary-value highlight-white" id="displayTotalCost" style="font-size: 1.1rem;">$0.00</span>
+        </div>
+
+        <div class="summary-row">
+          <span class="summary-label">Ganancia a Sumar (<span id="displayMarginPercent">50</span>%):</span>
+          <span class="summary-value highlight-yellow" id="displayProfit">$0.00</span>
+        </div>
+
+        <div class="summary-row" style="border-top: 1px solid #1a224d; padding-top: 12px; margin-top: 4px;">
+          <span class="summary-label" style="font-weight: 800; color: #2ed573;">PRECIO TOTAL DE VENTA:</span>
+          <span class="summary-value highlight-green" id="displayFinalPrice" style="font-size: 1.2rem;">$0.00</span>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Agregar ítems iniciales por defecto (similares a tu imagen)
     window.onload = function() {
       addItem("Hipoclorito", 1, 20, "L");
       addItem("Agua", 1, 1, "L");
@@ -315,20 +331,24 @@
       const laborCost = parseFloat(document.getElementById("laborCost").value) || 0;
       const profitMargin = parseFloat(document.getElementById("profitMargin").value) || 0;
 
-      // Costo Total = Materia Prima + Mano de obra
+      // Costo Total del Producto
       const totalCost = rawMaterialsTotal + laborCost;
 
-      // Ganancia en base al % configurado
+      // Monto de Ganancia en dólares
       const profitAmount = totalCost * (profitMargin / 100);
 
-      // Precio de Venta
+      // Precio Final
       const finalSalePrice = totalCost + profitAmount;
 
-      // Actualizar pantalla
-      document.getElementById("displayMainPrice").innerText = `$ ${finalSalePrice.toFixed(2)}`;
+      // Actualizar Valores
+      document.getElementById("displayRawMaterials").innerText = `$${rawMaterialsTotal.toFixed(2)}`;
+      document.getElementById("displayLabor").innerText = `$${laborCost.toFixed(2)}`;
       document.getElementById("displayTotalCost").innerText = `$${totalCost.toFixed(2)}`;
+      document.getElementById("displayMarginPercent").innerText = profitMargin;
       document.getElementById("displayProfit").innerText = `$${profitAmount.toFixed(2)}`;
-      document.getElementById("displaySalePrice").innerText = `$${finalSalePrice.toFixed(2)}`;
+      
+      document.getElementById("displaySalePrice").innerText = `$ ${finalSalePrice.toFixed(2)}`;
+      document.getElementById("displayFinalPrice").innerText = `$${finalSalePrice.toFixed(2)}`;
     }
   </script>
 </body>
