@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Costos Avanzada</title>
+  <title>Calculadora de Costos Avanzada - Por Unidad</title>
   <style>
     * {
       box-sizing: border-box;
@@ -22,15 +22,15 @@
 
     .container {
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
     }
 
     h1 {
       text-align: center;
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 800;
       letter-spacing: 0.5px;
-      margin-bottom: 25px;
+      margin-bottom: 22px;
       text-transform: uppercase;
       display: flex;
       align-items: center;
@@ -39,7 +39,7 @@
     }
 
     .section-title {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 700;
       color: #e2e8f0;
       text-transform: uppercase;
@@ -48,12 +48,12 @@
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     label {
       display: block;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: #a0aec0;
       margin-bottom: 6px;
     }
@@ -79,7 +79,7 @@
       display: grid;
       grid-template-columns: 2.2fr 1fr 1fr 1fr 1.2fr 30px;
       gap: 6px;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: #a0aec0;
       margin-bottom: 6px;
       padding: 0 4px;
@@ -130,21 +130,21 @@
       color: #00d2ff;
       padding: 10px 16px;
       border-radius: 10px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      margin-top: 5px;
-      margin-bottom: 25px;
+      margin-top: 4px;
+      margin-bottom: 22px;
     }
 
-    .grid-2 {
+    .grid-3 {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 25px;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 22px;
     }
 
     /* Tarjeta de Resumen Final */
@@ -152,43 +152,53 @@
       background-color: #0f132e;
       border: 1.5px solid #00d2ff;
       border-radius: 20px;
-      padding: 24px;
+      padding: 22px;
       box-shadow: 0 0 20px rgba(0, 210, 255, 0.15);
     }
 
     .main-price-box {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       border-bottom: 1px solid #1a224d;
-      padding-bottom: 16px;
+      padding-bottom: 14px;
     }
 
     .main-price-title {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #a0aec0;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .main-price {
-      font-size: 2.6rem;
+      font-size: 2.5rem;
       font-weight: 800;
       color: #2ed573;
+    }
+
+    .unit-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      background-color: #1c2b4d;
+      color: #00d2ff;
+      padding: 3px 10px;
+      border-radius: 12px;
+      margin-top: 4px;
     }
 
     /* Lista detallada final */
     .summary-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .summary-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
     }
 
     .summary-label {
@@ -197,28 +207,35 @@
 
     .summary-value {
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.95rem;
     }
 
     .highlight-blue { color: #00d2ff; }
     .highlight-white { color: #ffffff; }
     .highlight-yellow { color: #ffb703; }
     .highlight-green { color: #2ed573; }
+    .highlight-purple { color: #a55eea; }
+
+    .block-divider {
+      border-top: 1px solid #1a224d;
+      margin-top: 6px;
+      padding-top: 10px;
+    }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>📊 CALCULADORA DE COSTOS AVANZADA</h1>
+    <h1>📊 CALCULADORA DE COSTOS Y MARGEN</h1>
 
     <!-- Nombre del Producto -->
     <div class="form-group">
       <label>Nombre del Producto</label>
-      <input type="text" id="productName" placeholder="Ej: Hamburguesa Especial / Cloro">
+      <input type="text" id="productName" placeholder="Ej: Hamburguesa Especial / Cloro 1L">
     </div>
 
     <!-- Gestión de Materia Prima -->
-    <div class="section-title">GESTIÓN DE MATERIA PRIMA</div>
+    <div class="section-title">GESTIÓN DE MATERIA PRIMA (LOTE)</div>
     
     <div class="item-headers">
       <span>Materia Prima</span>
@@ -233,14 +250,18 @@
 
     <button type="button" class="btn-add" onclick="addItem()">+ Agregar Ítem</button>
 
-    <!-- Gastos Adicionales y Margen -->
-    <div class="grid-2">
+    <!-- Unidades Producidas, Gastos y Margen -->
+    <div class="grid-3">
       <div class="form-group" style="margin: 0;">
-        <label>Mano de Obra y Gastos ($)</label>
+        <label>Cant. Unidades</label>
+        <input type="number" id="unitsProduced" value="1" min="1" step="1" oninput="calculateTotal()">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label>Gastos / M.O ($)</label>
         <input type="number" id="laborCost" value="0.00" step="0.01" oninput="calculateTotal()">
       </div>
       <div class="form-group" style="margin: 0;">
-        <label>Margen de Ganancia (%)</label>
+        <label>Margen (%)</label>
         <input type="number" id="profitMargin" value="50" step="1" oninput="calculateTotal()">
       </div>
     </div>
@@ -248,34 +269,53 @@
     <!-- Tarjeta de Desglose Final -->
     <div class="results-card">
       <div class="main-price-box">
-        <div class="main-price-title">PRECIO DE VENTA SUGERIDO</div>
-        <div class="main-price" id="displaySalePrice">$ 0.00</div>
+        <div class="main-price-title">VENTA RECOMENDADA POR UNIDAD</div>
+        <div class="main-price" id="displayUnitPrice">$ 0.00</div>
+        <div class="unit-badge" id="displayUnitBadge">Para 1 Unidad</div>
       </div>
 
       <div class="summary-list">
+        <!-- MATERIA PRIMA Y COSTO INDIVIDUAL -->
         <div class="summary-row">
-          <span class="summary-label">Total en Materia Prima:</span>
+          <span class="summary-label">Total en Materia Prima (Lote):</span>
           <span class="summary-value highlight-blue" id="displayRawMaterials">$0.00</span>
         </div>
         
         <div class="summary-row">
-          <span class="summary-label">Mano de Obra / Gastos:</span>
-          <span class="summary-value highlight-white" id="displayLabor">$0.00</span>
-        </div>
-
-        <div class="summary-row" style="border-top: 1px dashed #232044; padding-top: 10px;">
-          <span class="summary-label" style="font-weight: 700; color: #ffffff;">COSTO TOTAL DEL PRODUCTO:</span>
-          <span class="summary-value highlight-white" id="displayTotalCost" style="font-size: 1.1rem;">$0.00</span>
+          <span class="summary-label">Inversión Total (M.P + Gastos):</span>
+          <span class="summary-value highlight-white" id="displayTotalInvestment">$0.00</span>
         </div>
 
         <div class="summary-row">
-          <span class="summary-label">Ganancia a Sumar (<span id="displayMarginPercent">50</span>%):</span>
-          <span class="summary-value highlight-yellow" id="displayProfit">$0.00</span>
+          <span class="summary-label">Costo Real por Unidad:</span>
+          <span class="summary-value highlight-purple" id="displayUnitCost">$0.00</span>
         </div>
 
-        <div class="summary-row" style="border-top: 1px solid #1a224d; padding-top: 12px; margin-top: 4px;">
-          <span class="summary-label" style="font-weight: 800; color: #2ed573;">PRECIO TOTAL DE VENTA:</span>
-          <span class="summary-value highlight-green" id="displayFinalPrice" style="font-size: 1.2rem;">$0.00</span>
+        <!-- GANANCIA Y PRECIO POR UNIDAD -->
+        <div class="summary-row block-divider">
+          <span class="summary-label">Ganancia por Unidad (<span id="displayMarginPercent">50</span>%):</span>
+          <span class="summary-value highlight-yellow" id="displayUnitProfit">$0.00</span>
+        </div>
+
+        <div class="summary-row">
+          <span class="summary-label" style="font-weight: 700; color: #ffffff;">Precio de Venta por Unidad:</span>
+          <span class="summary-value highlight-green" id="displayUnitSalePrice" style="font-size: 1.05rem;">$0.00</span>
+        </div>
+
+        <!-- MARGEN Y TOTALES GLOBAL DE BATCH -->
+        <div class="summary-row block-divider">
+          <span class="summary-label">Ventas Totales Esperadas:</span>
+          <span class="summary-value highlight-white" id="displayTotalSales">$0.00</span>
+        </div>
+
+        <div class="summary-row">
+          <span class="summary-label" style="font-weight: 800; color: #2ed573;">Ganancia Neta Total ($):</span>
+          <span class="summary-value highlight-green" id="displayTotalNetProfit" style="font-size: 1.15rem;">$0.00</span>
+        </div>
+
+        <div class="summary-row">
+          <span class="summary-label">Margen de Ganancia Real:</span>
+          <span class="summary-value highlight-yellow" id="displayRealProfitMargin">0.00%</span>
         </div>
       </div>
     </div>
@@ -319,6 +359,7 @@
       const rows = document.querySelectorAll(".item-row");
       let rawMaterialsTotal = 0;
 
+      // 1. Sumar Subtotales de Materia Prima
       rows.forEach(row => {
         const cost = parseFloat(row.querySelector(".item-cost").value) || 0;
         const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
@@ -328,27 +369,39 @@
         rawMaterialsTotal += subtotal;
       });
 
+      // 2. Parámetros Generales
+      const unitsProduced = Math.max(1, parseFloat(document.getElementById("unitsProduced").value) || 1);
       const laborCost = parseFloat(document.getElementById("laborCost").value) || 0;
-      const profitMargin = parseFloat(document.getElementById("profitMargin").value) || 0;
+      const profitMarginPercent = parseFloat(document.getElementById("profitMargin").value) || 0;
 
-      // Costo Total del Producto
-      const totalCost = rawMaterialsTotal + laborCost;
+      // 3. Inversión Total (Lote)
+      const totalInvestment = rawMaterialsTotal + laborCost;
 
-      // Monto de Ganancia en dólares
-      const profitAmount = totalCost * (profitMargin / 100);
+      // 4. Métricas por Unidad Individual
+      const unitCost = totalInvestment / unitsProduced; // Costo por unidad
+      const unitProfit = unitCost * (profitMarginPercent / 100); // Ganancia por unidad
+      const unitSalePrice = unitCost + unitProfit; // Precio venta por unidad
 
-      // Precio Final
-      const finalSalePrice = totalCost + profitAmount;
+      // 5. Totales y Márgenes Globales
+      const totalSales = unitSalePrice * unitsProduced;
+      const totalNetProfit = totalSales - totalInvestment; // Ganancia Total Neta
+      const realMargin = totalSales > 0 ? (totalNetProfit / totalSales) * 100 : 0;
 
-      // Actualizar Valores
+      // 6. Reflejar en la Interfaz
+      document.getElementById("displayUnitPrice").innerText = `$ ${unitSalePrice.toFixed(2)}`;
+      document.getElementById("displayUnitBadge").innerText = `Para ${unitsProduced} ${unitsProduced === 1 ? 'Unidad' : 'Unidades'}`;
+
       document.getElementById("displayRawMaterials").innerText = `$${rawMaterialsTotal.toFixed(2)}`;
-      document.getElementById("displayLabor").innerText = `$${laborCost.toFixed(2)}`;
-      document.getElementById("displayTotalCost").innerText = `$${totalCost.toFixed(2)}`;
-      document.getElementById("displayMarginPercent").innerText = profitMargin;
-      document.getElementById("displayProfit").innerText = `$${profitAmount.toFixed(2)}`;
-      
-      document.getElementById("displaySalePrice").innerText = `$ ${finalSalePrice.toFixed(2)}`;
-      document.getElementById("displayFinalPrice").innerText = `$${finalSalePrice.toFixed(2)}`;
+      document.getElementById("displayTotalInvestment").innerText = `$${totalInvestment.toFixed(2)}`;
+      document.getElementById("displayUnitCost").innerText = `$${unitCost.toFixed(2)}`;
+
+      document.getElementById("displayMarginPercent").innerText = profitMarginPercent;
+      document.getElementById("displayUnitProfit").innerText = `$${unitProfit.toFixed(2)}`;
+      document.getElementById("displayUnitSalePrice").innerText = `$${unitSalePrice.toFixed(2)}`;
+
+      document.getElementById("displayTotalSales").innerText = `$${totalSales.toFixed(2)}`;
+      document.getElementById("displayTotalNetProfit").innerText = `$${totalNetProfit.toFixed(2)}`;
+      document.getElementById("displayRealProfitMargin").innerText = `${realMargin.toFixed(1)}%`;
     }
   </script>
 </body>
