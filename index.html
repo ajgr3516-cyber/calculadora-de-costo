@@ -1,31 +1,94 @@
-<!-- Selección de Métodos de Pago Ampliados -->
-<div class="form-group-section">
-    <h3>2. Selecciona Método de Pago</h3>
-    
-    <div class="payment-options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
-        <label class="payment-card active">
-            <input type="radio" name="payment_method" value="Pago Móvil" checked onclick="selectPayment('pago-movil')">
-            <span class="payment-title">🇻🇪 Pago Móvil</span>
-        </label>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Costos & PVP PRO - AG MicroApps</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado con Logo -->
+        <header class="header">
+            <img src="logo.png" alt="AG MicroApps" class="logo">
+            <h1>Calculadora de Costos y Margen PRO</h1>
+            <p>Calcula tus costos reales, fija el PVP sugerido y asegura tu ganancia.</p>
+        </header>
 
-        <label class="payment-card">
-            <input type="radio" name="payment_method" value="Binance Pay" onclick="selectPayment('binance-pay')">
-            <span class="payment-title">🟡 Binance Pay</span>
-        </label>
+        <!-- Sección 1: Calculadora de Costos -->
+        <section class="calculator-card">
+            <h2>1. Cálculo de Costos y PVP</h2>
+            <form id="calculator-form">
+                <div class="form-group">
+                    <label for="costo-insumos">Costo de Insumos / Materiales ($):</label>
+                    <input type="number" id="costo-insumos" step="0.01" placeholder="Ej. 5.00" required>
+                </div>
 
-        <label class="payment-card">
-            <input type="radio" name="payment_method" value="USDT (TRC20)" onclick="selectPayment('usdt-trc20')">
-            <span class="payment-title">🟢 USDT (TRC20)</span>
-        </label>
+                <div class="form-group">
+                    <label for="mano-obra">Mano de Obra / Costos Indirectos ($):</label>
+                    <input type="number" id="mano-obra" step="0.01" placeholder="Ej. 2.25" value="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="margen-deseado">Margen de Ganancia Deseado (%):</label>
+                    <input type="number" id="margen-deseado" step="1" placeholder="Ej. 40" value="40" required>
+                </div>
+
+                <button type="button" class="btn-primary" onclick="calcularCostos()">Calcular PVP Sugerido</button>
+            </form>
+
+            <!-- Tarjeta de Resultados -->
+            <div id="resultados" class="results-card" style="display: none;">
+                <div class="result-box">
+                    <span>COSTOS TOTALES:</span>
+                    <strong id="res-costo-total">$0.00</strong>
+                </div>
+                <div class="result-box highlight">
+                    <span>P.V.P. SUGERIDO:</span>
+                    <strong id="res-pvp">$0.00</strong>
+                </div>
+                <div class="result-box">
+                    <span>MARGEN DE GANANCIA:</span>
+                    <strong id="res-ganancia">$0.00</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 2: Métodos de Pago Reales -->
+        <section class="payment-card-section">
+            <h2>2. Selecciona Método de Pago para Licencia</h2>
+            
+            <div class="payment-options">
+                <label class="payment-card active" onclick="selectPayment('pago-movil')">
+                    <input type="radio" name="payment_method" value="pago-movil" checked>
+                    <span class="payment-title">🇻🇪 Pago Móvil</span>
+                </label>
+
+                <label class="payment-card" onclick="selectPayment('binance-pay')">
+                    <input type="radio" name="payment_method" value="binance-pay">
+                    <span class="payment-title">🟡 Binance Pay</span>
+                </label>
+
+                <label class="payment-card" onclick="selectPayment('usdt-trc20')">
+                    <input type="radio" name="payment_method" value="usdt-trc20">
+                    <span class="payment-title">🟢 USDT (TRC20)</span>
+                </label>
+            </div>
+
+            <!-- Datos de Pago Inyectados por JS -->
+            <div id="payment-details" class="payment-instructions">
+                <!-- Carga dinámica -->
+            </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="reference">Número de Referencia / Hash / ID de Transacción *</label>
+                <input type="text" id="reference" placeholder="Ej. 12345678 o Hash de la red" required>
+            </div>
+
+            <button type="button" class="btn-success" onclick="enviarConfirmacion()">Confirmar Pago por WhatsApp</button>
+        </section>
     </div>
 
-    <!-- Contenedor donde se cargan los datos de pago -->
-    <div id="payment-details" class="payment-instructions" style="margin-top: 15px;">
-        <!-- Carga dinámica -->
-    </div>
-
-    <div class="form-group" style="margin-top: 15px;">
-        <label for="reference">Número de Referencia / ID de Transacción *</label>
-        <input type="text" id="reference" required placeholder="Ej. 12345678 o Hash de la red">
-    </div>
-</div>
+    <script src="script.js"></script>
+</body>
+</html>
