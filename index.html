@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Costos & PVP PRO - AG MicroApps</title>
+    <title>Calculadora de Costos - AG MicroApps</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,9 +15,9 @@
             <p>Calcula tus costos reales, fija el PVP sugerido y asegura tu ganancia.</p>
         </header>
 
-        <!-- Sección 1: Calculadora de Costos -->
+        <!-- Sección de Calculadora -->
         <section class="calculator-card">
-            <h2>1. Cálculo de Costos y PVP</h2>
+            <h2>Calcula tus Costos</h2>
             <form id="calculator-form">
                 <div class="form-group">
                     <label for="costo-insumos">Costo de Insumos / Materiales ($):</label>
@@ -54,35 +54,22 @@
             </div>
         </section>
 
-        <!-- Sección 2: Métodos de Pago Reales -->
+        <!-- Sección de Confirmación / Pago Original -->
         <section class="payment-card-section">
-            <h2>2. Selecciona Método de Pago para Licencia</h2>
+            <h2>Adquirir Licencia del Sistema</h2>
+            <p>Realiza tu Pago Móvil e ingresa la referencia para activar tu acceso:</p>
             
-            <div class="payment-options">
-                <label class="payment-card active" onclick="selectPayment('pago-movil')">
-                    <input type="radio" name="payment_method" value="pago-movil" checked>
-                    <span class="payment-title">🇻🇪 Pago Móvil</span>
-                </label>
-
-                <label class="payment-card" onclick="selectPayment('binance-pay')">
-                    <input type="radio" name="payment_method" value="binance-pay">
-                    <span class="payment-title">🟡 Binance Pay</span>
-                </label>
-
-                <label class="payment-card" onclick="selectPayment('usdt-trc20')">
-                    <input type="radio" name="payment_method" value="usdt-trc20">
-                    <span class="payment-title">🟢 USDT (TRC20)</span>
-                </label>
+            <div class="payment-instructions" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <strong>🇻🇪 Datos de Pago Móvil:</strong><br>
+                • <strong>Banco:</strong> Banco de Venezuela (0102)<br>
+                • <strong>Teléfono:</strong> 04249090289<br>
+                • <strong>Cédula:</strong> V-18451548<br>
+                • <strong>Monto:</strong> Tasa Oficial BCV del día ($15.00 USD)
             </div>
 
-            <!-- Datos de Pago Inyectados por JS -->
-            <div id="payment-details" class="payment-instructions">
-                <!-- Carga dinámica -->
-            </div>
-
-            <div class="form-group" style="margin-top: 15px;">
-                <label for="reference">Número de Referencia / Hash / ID de Transacción *</label>
-                <input type="text" id="reference" placeholder="Ej. 12345678 o Hash de la red" required>
+            <div class="form-group">
+                <label for="reference">Número de Referencia del Pago Móvil *</label>
+                <input type="text" id="reference" placeholder="Ej. 12345678" required>
             </div>
 
             <button type="button" class="btn-success" onclick="enviarConfirmacion()">Confirmar Pago por WhatsApp</button>
