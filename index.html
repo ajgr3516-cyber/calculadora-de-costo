@@ -1,117 +1,369 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Costos de Producción - AG MicroApps</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0f172a; color: #f8fafc; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; background: #1e293b; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        h1, h2 { color: #38bdf8; margin-bottom: 15px; text-align: center; }
-        .section { background: #334155; padding: 18px; border-radius: 8px; margin-bottom: 20px; }
-        label { display: block; margin-top: 10px; font-weight: 600; color: #cbd5e1; }
-        input, select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; }
-        .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
-        .col { flex: 1; min-width: 140px; }
-        .btn { display: inline-block; width: 100%; padding: 12px; background: #0284c7; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; }
-        .btn:hover { background: #0369a1; }
-        .btn-add { background: #10b981; margin-top: 10px; }
-        .btn-add:hover { background: #059669; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #0f172a; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #334155; font-size: 14px; }
-        th { background: #0284c7; color: white; }
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .card-result { background: #0f172a; border-left: 5px solid #38bdf8; padding: 15px; border-radius: 8px; }
-        .card-result.highlight { border-left-color: #10b981; background: #064e3b; }
-        .card-result span { font-size: 12px; color: #94a3b8; display: block; }
-        .card-result strong { font-size: 20px; color: #fff; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Digital de Costos - Telegram Mini App</title>
+  <!-- Script oficial de Telegram Web App -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--tg-theme-bg-color, #0b0a19);
+      color: var(--tg-theme-text-color, #ffffff);
+      padding: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .card {
+      background-color: #0f132e;
+      border: 1.5px solid #00d2ff;
+      border-radius: 20px;
+      padding: 22px 18px;
+      box-shadow: 0 0 25px rgba(0, 210, 255, 0.15);
+    }
+
+    /* Indicador de Pasos */
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #1f274d;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background-color: #00d2ff;
+      box-shadow: 0 0 8px #00d2ff;
+      width: 24px;
+      border-radius: 8px;
+    }
+
+    h1 {
+      font-size: 1.3rem;
+      font-weight: 900;
+      text-align: center;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, #ffffff 0%, #a0aec0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 0.82rem;
+      color: #a0aec0;
+      text-align: center;
+      margin-bottom: 18px;
+      line-height: 1.35;
+    }
+
+    /* Lista de Beneficios y Especificaciones (Texto Blanco Claro) */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .feature-item {
+      background-color: #16142e;
+      border: 1px solid #2b2752;
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: #ffffff; /* Alto contraste para lectura perfecta */
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .feature-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    /* Caja de Precio en Oferta */
+    .price-box {
+      background: linear-gradient(180deg, #131a3a 0%, #0c1126 100%);
+      border: 1.5px dashed #00d2ff;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .old-price {
+      text-decoration: line-through;
+      color: #ff4757;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .current-price {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #2ed573;
+      margin: 3px 0;
+    }
+
+    .price-tag {
+      font-size: 0.75rem;
+      color: #00d2ff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    /* Botones de Acción */
+    .btn-action {
+      width: 100%;
+      background: linear-gradient(90deg, #00d2ff 0%, #0072ff 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 210, 255, 0.35);
+      transition: transform 0.2s;
+    }
+
+    .btn-action:active {
+      transform: scale(0.98);
+    }
+
+    .btn-whatsapp {
+      background: linear-gradient(90deg, #25d366 0%, #128c7e 100%);
+      box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35);
+    }
+
+    /* Estilos del Paso 2 (Checkout) */
+    .hidden {
+      display: none;
+    }
+
+    .payment-methods {
+      background-color: #16142e;
+      border: 1px solid #2b2752;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .payment-title {
+      font-size: 0.8rem;
+      color: #00d2ff;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .payment-info {
+      font-size: 0.83rem;
+      color: #ffffff;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: #a0aec0;
+      margin-bottom: 4px;
+    }
+
+    input {
+      width: 100%;
+      background-color: #16142e;
+      border: 1px solid #2b2752;
+      border-radius: 10px;
+      padding: 11px 12px;
+      color: #ffffff;
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #00d2ff;
+    }
+
+    .btn-back {
+      background: none;
+      border: none;
+      color: #a0aec0;
+      font-size: 0.78rem;
+      cursor: pointer;
+      margin-bottom: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>📊 Calculadora de Costos de Producción</h1>
-    <p style="text-align: center; color: #94a3b8; margin-bottom: 20px;">Calcula insumos, indirectos, PVP y ganancias en USD y Bs.</p>
+  <div class="container">
+    <div class="card">
+      
+      <!-- Indicadores de Paso -->
+      <div class="step-indicator">
+        <div class="dot active" id="dot1"></div>
+        <div class="dot" id="dot2"></div>
+      </div>
 
-    <!-- Parámetros Generales -->
-    <div class="section">
-        <h2>1. Configuración de Lote y Moneda</h2>
-        <div class="row">
-            <div class="col">
-                <label>Tasa Oficial BCV (Bs / $):</label>
-                <input type="number" id="tasa-bcv" step="0.01" value="50.00" oninput="calcular()">
-            </div>
-            <div class="col">
-                <label>Unidades Producidas (Lote):</label>
-                <input type="number" id="unidades-lote" value="10" min="1" oninput="calcular()">
-            </div>
-            <div class="col">
-                <label>Margen de Ganancia (%):</label>
-                <input type="number" id="margen-ganancia" value="50" oninput="calcular()">
-            </div>
+      <!-- PASO 1: INFORMACIÓN, ESPECIFICACIONES Y OFERTA -->
+      <div id="step1">
+        <h1>CALCULADORA DE COSTOS PRO</h1>
+        <p class="subtitle">La herramienta digital definitiva para emprendedores, fabricantes y comercios.</p>
+
+        <!-- Especificaciones y Beneficios -->
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-icon">📊</span>
+            <span><strong>Gestión de Materia Prima:</strong> Desglose automático de cada insumo en dólares ($).</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">🔍</span>
+            <span><strong>Costo Real por Unidad:</strong> Divide la producción total y te da el costo exacto por producto.</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">⚙️</span>
+            <span><strong>Mano de Obra y Gastos:</strong> Suma imprevistos y gastos operativos a tu lote.</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">💡</span>
+            <span><strong>Precio Sugerido de Venta:</strong> Configura tu % de ganancia ideal sin perder dinero.</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">💵</span>
+            <span><strong>Margen Neta Limpia:</strong> Visualiza tu ganancia real en dólares y el % de retorno.</span>
+          </div>
         </div>
-    </div>
 
-    <!-- Materia Prima e Insumos -->
-    <div class="section">
-        <h2>2. Materia Prima / Insumos</h2>
-        <div id="materia-prima-list"></div>
-        <button type="button" class="btn btn-add" onclick="agregarMateriaPrima()">+ Agregar Insumo</button>
-    </div>
-
-    <!-- Costos Agregados / Indirectos -->
-    <div class="section">
-        <h2>3. Gastos Agregados e Indirectos</h2>
-        <div class="row">
-            <div class="col">
-                <label>Servicios Públicos (Luz, Agua, Gas) ($):</label>
-                <input type="number" class="indirecto-val" step="0.01" value="0.20" oninput="calcular()">
-            </div>
-            <div class="col">
-                <label>Empaque / Bolsas / Cajas ($):</label>
-                <input type="number" class="indirecto-val" step="0.01" value="0.30" oninput="calcular()">
-            </div>
-            <div class="col">
-                <label>Mano de Obra / Imprevistos ($):</label>
-                <input type="number" class="indirecto-val" step="0.01" value="0.50" oninput="calcular()">
-            </div>
+        <!-- Caja de Oferta Especial -->
+        <div class="price-box">
+          <div class="old-price">Precio Regular: $15.00 USD</div>
+          <div class="current-price">$ 5.00 USD</div>
+          <div class="price-tag">OFERTA ESPECIAL • ACCESO DE POR VIDA</div>
         </div>
-    </div>
 
-    <!-- Resumen de Resultados -->
-    <div class="section">
-        <h2>4. Resultados y Ganancias</h2>
-        <div class="results-grid">
-            <div class="card-result">
-                <span>COSTO TOTAL DEL LOTE:</span>
-                <strong id="res-costo-lote-usd">$0.00</strong>
-                <span id="res-costo-lote-bs">Bs. 0.00</span>
-            </div>
-            <div class="card-result">
-                <span>COSTO UNITARIO (POR PRODUCTO):</span>
-                <strong id="res-costo-unitario-usd">$0.00</strong>
-                <span id="res-costo-unitario-bs">Bs. 0.00</span>
-            </div>
-            <div class="card-result highlight">
-                <span>P.V.P. UNITARIO (VENTA):</span>
-                <strong id="res-pvp-unitario-usd">$0.00</strong>
-                <span id="res-pvp-unitario-bs">Bs. 0.00</span>
-            </div>
-            <div class="card-result highlight">
-                <span>GANANCIA NETO UNITARIA:</span>
-                <strong id="res-ganancia-unitario-usd">$0.00</strong>
-                <span id="res-ganancia-unitario-bs">Bs. 0.00</span>
-            </div>
-            <div class="card-result">
-                <span>GANANCIA NETO TOTAL (LOTE):</span>
-                <strong id="res-ganancia-total-usd">$0.00</strong>
-                <span id="res-ganancia-total-bs">Bs. 0.00</span>
-            </div>
+        <button type="button" class="btn-action" onclick="goToStep(2)">
+          🛒 ¡QUIERO ADQUIRIRLA AHORA!
+        </button>
+      </div>
+
+      <!-- PASO 2: DATOS DE PAGO MÓVIL -->
+      <div id="step2" class="hidden">
+        <button type="button" class="btn-back" onclick="goToStep(1)">← Volver a las especificaciones</button>
+        
+        <h1>DATOS DE PAGO MÓVIL</h1>
+        <p class="subtitle">Realiza tu pago e ingresa los datos para recibir tu acceso de inmediato.</p>
+
+        <div class="payment-methods">
+          <div class="payment-title">🇻🇪 Datos Bancarios (Banco de Venezuela)</div>
+          <div class="payment-info">
+            • <strong>Banco:</strong> 0102 - Banco de Venezuela<br>
+            • <strong>Teléfono:</strong> 0424-9090289<br>
+            • <strong>Cédula:</strong> 18.451.548<br>
+            <span style="color: #00d2ff; font-size: 0.76rem;">* Calcula el monto en Bs. a la tasa oficial del día.</span>
+          </div>
         </div>
-    </div>
-</div>
 
-<script src="script.js"></script>
+        <div class="form-group">
+          <label>Nombre y Apellido</label>
+          <input type="text" id="buyerName" placeholder="Tu nombre completo">
+        </div>
+
+        <div class="form-group">
+          <label>Tu Teléfono / WhatsApp</label>
+          <input type="tel" id="buyerPhone" placeholder="Ej: 04141234567">
+        </div>
+
+        <div class="form-group">
+          <label>Últimos 4 dígitos o Referencia de Pago</label>
+          <input type="text" id="paymentRef" placeholder="Ej: 5678">
+        </div>
+
+        <button type="button" class="btn-action btn-whatsapp" onclick="sendToWhatsApp()">
+          📲 CONFIRMAR PAGO POR WHATSAPP
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Inicializar Telegram WebApp
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+
+    // TU NÚMERO DE WHATSAPP CON CÓDIGO DE PAÍS
+    const MY_WHATSAPP_NUMBER = "584249090289"; 
+
+    function goToStep(stepNumber) {
+      if (stepNumber === 2) {
+        document.getElementById("step1").classList.add("hidden");
+        document.getElementById("step2").classList.remove("hidden");
+        document.getElementById("dot1").classList.remove("active");
+        document.getElementById("dot2").classList.add("active");
+      } else {
+        document.getElementById("step2").classList.add("hidden");
+        document.getElementById("step1").classList.remove("hidden");
+        document.getElementById("dot2").classList.remove("active");
+        document.getElementById("dot1").classList.add("active");
+      }
+    }
+
+    function sendToWhatsApp() {
+      const name = document.getElementById("buyerName").value.trim();
+      const phone = document.getElementById("buyerPhone").value.trim();
+      const ref = document.getElementById("paymentRef").value.trim();
+
+      if (!name || !ref) {
+        alert("Por favor completa tu Nombre y el Número de Referencia.");
+        return;
+      }
+
+      const message = `¡Hola! 👋 Acabo de realizar mi *Pago Móvil* para adquirir la Calculadora Digital de Costos Pro.\n\n` +
+                      `👤 *Nombre:* ${name}\n` +
+                      `📞 *WhatsApp:* ${phone || 'No especificado'}\n` +
+                      `🏦 *Método:* Pago Móvil (Banco de Venezuela)\n` +
+                      `🧾 *Referencia:* ${ref}\n\n` +
+                      `Adjunto el comprobante de pago. Quedo a la espera de mi acceso. ¡Muchas gracias!`;
+
+      const whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, "_blank");
+    }
+  </script>
 </body>
 </html>
