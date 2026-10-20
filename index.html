@@ -3,559 +3,334 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Costos Avanzada PRO - AG MicroApps</title>
-  <!-- Telegram WebApp SDK -->
+  <title>Calculadora de costo</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              dark: '#0b0a19',
-              card: '#0f132e',
-              input: '#16142e',
-              border: '#2b2752',
-              cyan: '#00d2ff',
-              green: '#2ed573',
-              purple: '#a55eea',
-              yellow: '#ffb703',
-              red: '#ff4757'
-            }
-          }
-        }
-      }
-    }
-  </script>
-
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
-      background-color: #0b0a19;
+      background-color: #090714;
       color: #ffffff;
+      padding: 16px 12px;
+      display: flex;
+      justify-content: center;
       min-height: 100vh;
     }
 
-    .glow-cyan {
-      box-shadow: 0 0 20px rgba(0, 210, 255, 0.18);
+    .container {
+      width: 100%;
+      max-width: 420px;
     }
 
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0b0a19;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #2b2752;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #00d2ff;
+    /* Encabezado con Emoji */
+    .app-title {
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      margin-top: 10px;
+      margin-bottom: 24px;
+      line-height: 1.2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    select option {
-      background-color: #16142e;
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 800;
       color: #ffffff;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
     }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: #a0aec0;
+      margin-bottom: 6px;
+    }
+
+    /* Estilo idéntico a las cajas de texto de la imagen */
+    input, select {
+      width: 100%;
+      background-color: #120e2a;
+      border: 1px solid #231b4e;
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #00a8ff;
+      box-shadow: 0 0 10px rgba(0, 168, 255, 0.3);
+    }
+
+    /* Tabla de Ítems (Materia Prima) */
+    .item-headers {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr 1fr 1.1fr 28px;
+      gap: 6px;
+      font-size: 0.72rem;
+      color: #a0aec0;
+      margin-bottom: 6px;
+      padding: 0 2px;
+    }
+
+    .item-row {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr 1fr 1.1fr 28px;
+      gap: 6px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    .item-row input, .item-row select {
+      padding: 10px 8px;
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    .item-row input.item-name {
+      text-align: left;
+      padding-left: 12px;
+    }
+
+    .btn-remove {
+      background: none;
+      border: none;
+      color: #ff3b30;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+    }
+
+    /* Botón + Agregar Ítem */
+    .btn-add {
+      background-color: #0d1b34;
+      border: 1.5px solid #00a8ff;
+      color: #00a8ff;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      margin-bottom: 22px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    /* Tarjeta Neón de Resultados (Tal cual la imagen) */
+    .results-card {
+      background-color: #090714;
+      border: 2px solid #00a8ff;
+      border-radius: 20px;
+      padding: 24px 16px 18px 16px;
+      box-shadow: 0 0 15px rgba(0, 168, 255, 0.2);
+      text-align: center;
+    }
+
+    .main-price {
+      font-size: 2.7rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 18px;
+      letter-spacing: -0.5px;
+    }
+
+    .results-divider {
+      border-top: 1px solid #1a224d;
+      margin-bottom: 14px;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 4px;
+    }
+
+    .res-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .res-label {
+      font-size: 0.65rem;
+      color: #a0aec0;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .res-value {
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+
+    .val-cost { color: #ffffff; }
+    .val-profit { color: #ffb703; }
+    .val-sale { color: #2ed573; }
   </style>
 </head>
-<body class="p-3 sm:p-5 flex justify-center items-start min-h-screen">
+<body>
 
-  <div class="w-full max-w-3xl space-y-5">
+  <div class="container">
     
-    <!-- Header App Title -->
-    <header class="text-center py-2 relative">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-xs font-bold uppercase tracking-wider mb-2">
-        <i class="fa-solid fa-bolt text-brand-yellow"></i> AG MicroApps Pro
+    <!-- Título Principal -->
+    <div class="app-title">
+      📊 CALCULADORA DE COSTOS AVANZADA
+    </div>
+
+    <!-- Nombre del Producto -->
+    <div class="form-group">
+      <label>Nombre del Producto</label>
+      <input type="text" id="productName" placeholder="Ej. Cloro 1L / Hamburguesa">
+    </div>
+
+    <!-- Sección Materia Prima -->
+    <div class="section-title">GESTIÓN DE MATERIA PRIMA</div>
+    
+    <div class="item-headers">
+      <span>Descripción del Ítem</span>
+      <span>$ Costo</span>
+      <span>Cantidad</span>
+      <span>Unidad</span>
+      <span></span>
+    </div>
+
+    <div id="itemsContainer"></div>
+
+    <button type="button" class="btn-add" onclick="addItem()">+ Agregar Ítem</button>
+
+    <!-- Mano de Obra y Margen -->
+    <div class="grid-2">
+      <div class="form-group" style="margin: 0;">
+        <label>Mano de Obra y Gastos ($)</label>
+        <input type="number" id="laborCost" value="0.00" step="0.01" oninput="calculateTotal()">
       </div>
-      <h1 class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-brand-cyan tracking-wide uppercase">
-        Calculadora de Costos & Margen
-      </h1>
-      <p class="text-xs sm:text-sm text-slate-400 mt-1">Gestión de recetas, materia prima e indicadores en USD y VES</p>
-    </header>
-
-    <!-- General Settings Card -->
-    <div class="bg-brand-card border border-brand-border rounded-2xl p-4 sm:p-5 shadow-xl">
-      <div class="text-xs font-bold text-brand-cyan uppercase tracking-wider mb-3 flex items-center justify-between">
-        <span><i class="fa-solid fa-sliders mr-2"></i> Configuración del Producto & Tasa</span>
-        <button onclick="resetDefaults()" class="text-slate-400 hover:text-brand-red text-xs transition-colors flex items-center gap-1">
-          <i class="fa-solid fa-rotate-right"></i> Reiniciar
-        </button>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Nombre del Producto / Receta</label>
-          <input type="text" id="productName" value="Producto o Lote Especial" placeholder="Ej: Jabón Líquido / Franela Sublimada" class="w-full bg-brand-input border border-brand-border rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-cyan outline-none transition-all" oninput="calculateTotal(); saveState();">
-        </div>
-
-        <div>
-          <label class="block text-xs text-slate-400 mb-1 flex justify-between">
-            <span>Tasa BCV (Bs. / USD $)</span>
-            <span class="text-brand-cyan text-[10px]">Oficial</span>
-          </label>
-          <div class="relative">
-            <span class="absolute left-3 top-2.5 text-slate-400 text-sm font-semibold">Bs.</span>
-            <input type="number" id="bcvRate" value="36.50" step="0.01" class="w-full bg-brand-input border border-brand-border rounded-xl pl-10 pr-3 py-2.5 text-sm font-bold text-brand-green focus:border-brand-cyan outline-none transition-all" oninput="calculateTotal(); saveState();">
-          </div>
-        </div>
-      </div>
-
-      <!-- Secondary Controls Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div>
-          <label class="block text-[11px] text-slate-400 mb-1">Unidades Lote</label>
-          <input type="number" id="unitsProduced" value="10" min="1" step="1" class="w-full bg-brand-input border border-brand-border rounded-xl px-3 py-2 text-sm font-bold text-white focus:border-brand-cyan outline-none" oninput="calculateTotal(); saveState();">
-        </div>
-
-        <div>
-          <label class="block text-[11px] text-slate-400 mb-1">Gastos / M.O ($)</label>
-          <input type="number" id="laborCost" value="1.00" step="0.5" class="w-full bg-brand-input border border-brand-border rounded-xl px-3 py-2 text-sm font-bold text-white focus:border-brand-cyan outline-none" oninput="calculateTotal(); saveState();">
-        </div>
-
-        <div>
-          <label class="block text-[11px] text-slate-400 mb-1">Margen (%)</label>
-          <input type="number" id="profitMargin" value="40" step="1" class="w-full bg-brand-input border border-brand-border rounded-xl px-3 py-2 text-sm font-bold text-brand-yellow focus:border-brand-cyan outline-none" oninput="calculateTotal(); saveState();">
-        </div>
-
-        <div>
-          <label class="block text-[11px] text-slate-400 mb-1">Fórmula Margen</label>
-          <select id="marginType" class="w-full bg-brand-input border border-brand-border rounded-xl px-2 py-2 text-xs font-semibold text-white focus:border-brand-cyan outline-none" onchange="calculateTotal(); saveState();">
-            <option value="cost">Sobre Costo</option>
-            <option value="price">Sobre Venta</option>
-          </select>
-        </div>
+      <div class="form-group" style="margin: 0;">
+        <label>Margen de Ganancia (%)</label>
+        <input type="number" id="profitMargin" value="50" step="1" oninput="calculateTotal()">
       </div>
     </div>
 
-    <!-- Raw Materials Section -->
-    <div class="bg-brand-card border border-brand-border rounded-2xl p-4 sm:p-5 shadow-xl">
-      <div class="flex items-center justify-between mb-3">
-        <div class="text-xs font-bold text-brand-cyan uppercase tracking-wider flex items-center gap-2">
-          <i class="fa-solid fa-boxes-stacked"></i> Materia Prima & Insumos
+    <!-- Tarjeta de Resultados (Copia idéntica) -->
+    <div class="results-card">
+      <div class="main-price" id="displayMainPrice">$ 0.00</div>
+      
+      <div class="results-divider"></div>
+
+      <div class="results-grid">
+        <div class="res-col">
+          <span class="res-label">COSTO TOTAL</span>
+          <span class="res-value val-cost" id="displayCost">$0.00</span>
         </div>
-        <span class="text-[11px] text-slate-400" id="itemCountBadge">0 ítems</span>
-      </div>
-
-      <div id="itemsContainer" class="space-y-3 mb-4"></div>
-
-      <button type="button" onclick="addItem()" class="w-full sm:w-auto bg-brand-input hover:bg-brand-cyan/10 border border-brand-cyan/40 text-brand-cyan px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-95">
-        <i class="fa-solid fa-plus"></i> Agregar Insumo / Materia Prima
-      </button>
-    </div>
-
-    <!-- Results Dashboard Card -->
-    <div class="bg-brand-card border-2 border-brand-cyan rounded-2xl p-5 shadow-2xl glow-cyan relative overflow-hidden">
-      <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-brand-cyan/10 rounded-full blur-2xl pointer-events-none"></div>
-
-      <!-- Main Unit Price Highlight Header -->
-      <div class="text-center pb-5 border-b border-brand-border/80">
-        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
-          <i class="fa-solid fa-tag text-brand-cyan mr-1"></i> Precio Venta Sugerido por Unidad
+        <div class="res-col">
+          <span class="res-label">GANANCIA</span>
+          <span class="res-value val-profit" id="displayProfit">$0.00</span>
         </div>
-        
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 my-2">
-          <div class="text-3xl sm:text-4xl font-black text-brand-green tracking-tight" id="displayUnitPriceUSD">
-            $ 0.00
-          </div>
-          <div class="hidden sm:block text-slate-600 text-2xl font-light">|</div>
-          <div class="text-xl sm:text-2xl font-extrabold text-brand-cyan" id="displayUnitPriceVES">
-            Bs. 0.00
-          </div>
-        </div>
-
-        <div class="inline-block bg-brand-input border border-brand-border px-3 py-1 rounded-full text-xs text-slate-300 font-medium" id="displayUnitBadge">
-          Lote para 1 Unidad
+        <div class="res-col">
+          <span class="res-label">PRECIO VENTA</span>
+          <span class="res-value val-sale" id="displaySale">$0.00</span>
         </div>
       </div>
-
-      <!-- Detailed Breakdown Grid -->
-      <div class="mt-5 space-y-2.5 text-xs sm:text-sm">
-        
-        <div class="flex justify-between items-center py-1">
-          <span class="text-slate-400">Materia Prima Total (Lote):</span>
-          <div class="text-right">
-            <span class="font-bold text-brand-cyan" id="displayRawMaterialsUSD">$0.00</span>
-            <span class="text-[11px] text-slate-400 block" id="displayRawMaterialsVES">Bs. 0.00</span>
-          </div>
-        </div>
-
-        <div class="flex justify-between items-center py-1">
-          <span class="text-slate-400">Inversión Lote (M.P + Gastos):</span>
-          <div class="text-right">
-            <span class="font-bold text-white" id="displayTotalInvestmentUSD">$0.00</span>
-            <span class="text-[11px] text-slate-400 block" id="displayTotalInvestmentVES">Bs. 0.00</span>
-          </div>
-        </div>
-
-        <div class="flex justify-between items-center py-1">
-          <span class="text-slate-400">Costo Real por Unidad:</span>
-          <div class="text-right">
-            <span class="font-bold text-brand-purple" id="displayUnitCostUSD">$0.00</span>
-            <span class="text-[11px] text-slate-400 block" id="displayUnitCostVES">Bs. 0.00</span>
-          </div>
-        </div>
-
-        <div class="border-t border-brand-border/60 my-2 pt-2"></div>
-
-        <div class="flex justify-between items-center py-1">
-          <span class="text-slate-400">
-            Ganancia por Unidad (<span id="displayMarginPercent" class="text-brand-yellow font-bold">0</span>%):
-          </span>
-          <div class="text-right">
-            <span class="font-bold text-brand-yellow" id="displayUnitProfitUSD">$0.00</span>
-            <span class="text-[11px] text-slate-400 block" id="displayUnitProfitVES">Bs. 0.00</span>
-          </div>
-        </div>
-
-        <div class="flex justify-between items-center py-1">
-          <span class="text-slate-400">Ventas Totales Esperadas:</span>
-          <div class="text-right">
-            <span class="font-bold text-white" id="displayTotalSalesUSD">$0.00</span>
-            <span class="text-[11px] text-slate-400 block" id="displayTotalSalesVES">Bs. 0.00</span>
-          </div>
-        </div>
-
-        <div class="flex justify-between items-center py-1 bg-brand-input/50 p-2.5 rounded-xl border border-brand-border">
-          <span class="font-bold text-white">Ganancia Neta Total Lote:</span>
-          <div class="text-right">
-            <span class="font-black text-brand-green text-base" id="displayTotalNetProfitUSD">$0.00</span>
-            <span class="text-xs text-brand-green/80 block font-bold" id="displayTotalNetProfitVES">Bs. 0.00</span>
-          </div>
-        </div>
-
-        <div class="flex justify-between items-center py-1">
-          <span class="text-slate-400">Margen Real sobre Ventas:</span>
-          <span class="font-bold text-brand-yellow text-sm" id="displayRealProfitMargin">0.00%</span>
-        </div>
-
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 pt-4 border-t border-brand-border/80">
-        <button onclick="copyFormattedSummary()" class="w-full bg-brand-input hover:bg-slate-800 text-white border border-brand-border py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 active:scale-95">
-          <i class="fa-regular fa-copy text-brand-cyan"></i> Copiar Resumen
-        </button>
-        <button onclick="shareWhatsApp()" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95">
-          <i class="fa-brands fa-whatsapp text-lg"></i> Compartir WhatsApp
-        </button>
-      </div>
-
-    </div>
-
-    <!-- Notification Toast Box -->
-    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-brand-cyan text-brand-dark font-extrabold px-4 py-2.5 rounded-full shadow-2xl text-xs flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none translate-y-4 z-50">
-      <i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Notificación</span>
     </div>
 
   </div>
 
   <script>
+    // Inicializar Telegram WebApp
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
     }
 
-    const UNIT_RATIOS = {
-      'Kg': { base: 'g', factor: 1000 },
-      'Gr': { base: 'g', factor: 1 },
-      'L': { base: 'ml', factor: 1000 },
-      'ml': { base: 'ml', factor: 1 },
-      'Galon': { base: 'ml', factor: 3785.41 },
-      'Unid': { base: 'u', factor: 1 }
-    };
-
-    const defaultData = [
-      { name: "Insumo Principal", buyCost: 5.00, buyQty: 1000, buyUnit: "Gr", useQty: 250, useUnit: "Gr" },
-      { name: "Empaque / Adhesivo", buyCost: 1.50, buyQty: 10, buyUnit: "Unid", useQty: 1, useUnit: "Unid" }
-    ];
-
+    // Cargar ítems de ejemplo idénticos a tu captura al iniciar
     window.onload = function() {
-      loadSavedState();
+      addItem("Hipoclorito", 1, 20, "L");
+      addItem("Agua", 1, 1, "L");
     };
 
-    function getItemCalculatedCost(buyCost, buyQty, buyUnit, useQty, useUnit) {
-      if (!buyCost || !buyQty || buyQty <= 0 || !useQty || useQty <= 0) return 0;
-      const buyUnitInfo = UNIT_RATIOS[buyUnit] || { base: 'u', factor: 1 };
-      const useUnitInfo = UNIT_RATIOS[useUnit] || { base: 'u', factor: 1 };
-
-      if (buyUnitInfo.base !== useUnitInfo.base) return 0;
-
-      const totalBuyBaseUnits = buyQty * buyUnitInfo.factor;
-      const totalUseBaseUnits = useQty * useUnitInfo.factor;
-      const costPerBaseUnit = buyCost / totalBuyBaseUnits;
-      return costPerBaseUnit * totalUseBaseUnits;
-    }
-
-    function addItem(data = null) {
+    function addItem(name = "", cost = "", qty = "", unit = "L") {
       const container = document.getElementById("itemsContainer");
-      const item = data || { name: "", buyCost: "", buyQty: "", buyUnit: "Kg", useQty: "", useUnit: "Gr" };
-
       const row = document.createElement("div");
-      row.className = "item-row bg-brand-input/80 border border-brand-border p-3 rounded-xl space-y-2 text-xs transition-all hover:border-brand-border/90";
-      
+      row.className = "item-row";
+
       row.innerHTML = `
-        <div class="flex items-center justify-between gap-2">
-          <input type="text" class="item-name bg-brand-card border border-brand-border rounded-lg px-2.5 py-1.5 text-xs text-white font-medium focus:border-brand-cyan outline-none w-full" placeholder="Nombre insumo" value="${item.name}" oninput="calculateTotal(); saveState();">
-          <button type="button" onclick="removeItem(this)" class="text-brand-red hover:bg-brand-red/10 p-1.5 rounded-lg transition-colors" title="Eliminar">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center">
-          <div class="col-span-1">
-            <label class="text-[10px] text-slate-400 block mb-0.5">$ Costo Compra</label>
-            <input type="number" class="item-buy-cost bg-brand-card border border-brand-border rounded-lg px-2 py-1 text-xs text-white focus:border-brand-cyan outline-none w-full" placeholder="0.00" value="${item.buyCost}" step="0.01" oninput="calculateTotal(); saveState();">
-          </div>
-
-          <div class="col-span-1">
-            <label class="text-[10px] text-slate-400 block mb-0.5">Cant. Comprada</label>
-            <div class="flex gap-1">
-              <input type="number" class="item-buy-qty bg-brand-card border border-brand-border rounded-lg px-1.5 py-1 text-xs text-white focus:border-brand-cyan outline-none w-full" placeholder="1" value="${item.buyQty}" step="0.01" oninput="calculateTotal(); saveState();">
-              <select class="item-buy-unit bg-brand-card border border-brand-border rounded-lg px-1 py-1 text-[11px] text-brand-cyan font-bold outline-none" onchange="syncUnits(this); calculateTotal(); saveState();">
-                <option value="Kg" ${item.buyUnit === 'Kg' ? 'selected' : ''}>Kg</option>
-                <option value="Gr" ${item.buyUnit === 'Gr' ? 'selected' : ''}>Gr</option>
-                <option value="L" ${item.buyUnit === 'L' ? 'selected' : ''}>L</option>
-                <option value="ml" ${item.buyUnit === 'ml' ? 'selected' : ''}>ml</option>
-                <option value="Galon" ${item.buyUnit === 'Galon' ? 'selected' : ''}>Galón</option>
-                <option value="Unid" ${item.buyUnit === 'Unid' ? 'selected' : ''}>Unid</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="col-span-2 sm:col-span-2">
-            <label class="text-[10px] text-slate-400 block mb-0.5">Cant. Usada en Lote</label>
-            <div class="flex gap-1">
-              <input type="number" class="item-use-qty bg-brand-card border border-brand-border rounded-lg px-2 py-1 text-xs text-white focus:border-brand-cyan outline-none w-full" placeholder="0" value="${item.useQty}" step="0.01" oninput="calculateTotal(); saveState();">
-              <select class="item-use-unit bg-brand-card border border-brand-border rounded-lg px-1 py-1 text-[11px] text-brand-cyan font-bold outline-none" onchange="calculateTotal(); saveState();">
-                <option value="Gr" ${item.useUnit === 'Gr' ? 'selected' : ''}>Gr</option>
-                <option value="Kg" ${item.useUnit === 'Kg' ? 'selected' : ''}>Kg</option>
-                <option value="ml" ${item.useUnit === 'ml' ? 'selected' : ''}>ml</option>
-                <option value="L" ${item.useUnit === 'L' ? 'selected' : ''}>L</option>
-                <option value="Galon" ${item.useUnit === 'Galon' ? 'selected' : ''}>Galón</option>
-                <option value="Unid" ${item.useUnit === 'Unid' ? 'selected' : ''}>Unid</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="col-span-2 sm:col-span-1 text-right bg-brand-card/60 p-1.5 rounded-lg border border-brand-border/50">
-            <span class="text-[10px] text-slate-400 block">Costo Usado</span>
-            <span class="item-subtotal font-extrabold text-brand-green text-xs">$0.00</span>
-          </div>
-        </div>
+        <input type="text" class="item-name" placeholder="Ítem" value="${name}" oninput="calculateTotal()">
+        <input type="number" class="item-cost" placeholder="0" value="${cost}" step="0.01" oninput="calculateTotal()">
+        <input type="number" class="item-qty" placeholder="0" value="${qty}" step="0.01" oninput="calculateTotal()">
+        <select class="item-unit" onchange="calculateTotal()">
+          <option value="L" ${unit === 'L' ? 'selected' : ''}>L</option>
+          <option value="Kg" ${unit === 'Kg' ? 'selected' : ''}>Kg</option>
+          <option value="Gr" ${unit === 'Gr' ? 'selected' : ''}>Gr</option>
+          <option value="Unid" ${unit === 'Unid' ? 'selected' : ''}>Unid</option>
+        </select>
+        <button type="button" class="btn-remove" onclick="removeItem(this)">✕</button>
       `;
 
       container.appendChild(row);
       calculateTotal();
-      updateBadgeCount();
     }
 
     function removeItem(btn) {
-      btn.closest('.item-row').remove();
+      btn.parentElement.remove();
       calculateTotal();
-      saveState();
-      updateBadgeCount();
-    }
-
-    function syncUnits(buyUnitSelect) {
-      const row = buyUnitSelect.closest('.item-row');
-      const useUnitSelect = row.querySelector('.item-use-unit');
-      const buyUnit = buyUnitSelect.value;
-
-      if (buyUnit === 'Kg' || buyUnit === 'Gr') useUnitSelect.value = 'Gr';
-      else if (buyUnit === 'L' || buyUnit === 'ml' || buyUnit === 'Galon') useUnitSelect.value = 'ml';
-      else if (buyUnit === 'Unid') useUnitSelect.value = 'Unid';
-    }
-
-    function updateBadgeCount() {
-      const count = document.querySelectorAll('.item-row').length;
-      document.getElementById('itemCountBadge').innerText = `${count} ${count === 1 ? 'insumo' : 'insumos'}`;
     }
 
     function calculateTotal() {
       const rows = document.querySelectorAll(".item-row");
-      let rawMaterialsTotalUSD = 0;
+      let totalCost = 0;
 
+      // 1. Calcular costo acumulado de insumos
       rows.forEach(row => {
-        const buyCost = parseFloat(row.querySelector(".item-buy-cost").value) || 0;
-        const buyQty = parseFloat(row.querySelector(".item-buy-qty").value) || 0;
-        const buyUnit = row.querySelector(".item-buy-unit").value;
-        const useQty = parseFloat(row.querySelector(".item-use-qty").value) || 0;
-        const useUnit = row.querySelector(".item-use-unit").value;
-
-        const subtotal = getItemCalculatedCost(buyCost, buyQty, buyUnit, useQty, useUnit);
-        row.querySelector(".item-subtotal").innerText = `$${subtotal.toFixed(2)}`;
-        rawMaterialsTotalUSD += subtotal;
+        const cost = parseFloat(row.querySelector(".item-cost").value) || 0;
+        const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
+        totalCost += (cost * qty);
       });
 
-      const bcvRate = Math.max(0.01, parseFloat(document.getElementById("bcvRate").value) || 1);
-      const unitsProduced = Math.max(1, parseFloat(document.getElementById("unitsProduced").value) || 1);
-      const laborCostUSD = parseFloat(document.getElementById("laborCost").value) || 0;
-      const profitMarginPercent = parseFloat(document.getElementById("profitMargin").value) || 0;
-      const marginType = document.getElementById("marginType").value;
+      // 2. Sumar Mano de Obra
+      const laborCost = parseFloat(document.getElementById("laborCost").value) || 0;
+      totalCost += laborCost;
 
-      const totalInvestmentUSD = rawMaterialsTotalUSD + laborCostUSD;
-      const unitCostUSD = totalInvestmentUSD / unitsProduced;
+      // 3. Aplicar Margen %
+      const profitMargin = parseFloat(document.getElementById("profitMargin").value) || 0;
+      const profitAmount = totalCost * (profitMargin / 100);
+      const salePrice = totalCost + profitAmount;
 
-      let unitSalePriceUSD = 0;
-      if (marginType === "cost") {
-        unitSalePriceUSD = unitCostUSD * (1 + profitMarginPercent / 100);
-      } else {
-        const marginDecimal = profitMarginPercent / 100;
-        unitSalePriceUSD = marginDecimal < 1 ? unitCostUSD / (1 - marginDecimal) : unitCostUSD;
-      }
-
-      const unitProfitUSD = unitSalePriceUSD - unitCostUSD;
-      const totalSalesUSD = unitSalePriceUSD * unitsProduced;
-      const totalNetProfitUSD = totalSalesUSD - totalInvestmentUSD;
-      const realProfitMargin = totalSalesUSD > 0 ? (totalNetProfitUSD / totalSalesUSD) * 100 : 0;
-
-      const formatUSD = (val) => `$${val.toFixed(2)}`;
-      const formatVES = (val) => `Bs. ${(val * bcvRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-      document.getElementById("displayUnitPriceUSD").innerText = formatUSD(unitSalePriceUSD);
-      document.getElementById("displayUnitPriceVES").innerText = formatVES(unitSalePriceUSD);
-      document.getElementById("displayUnitBadge").innerText = `Lote para ${unitsProduced} ${unitsProduced === 1 ? 'Unidad' : 'Unidades'}`;
-
-      document.getElementById("displayRawMaterialsUSD").innerText = formatUSD(rawMaterialsTotalUSD);
-      document.getElementById("displayRawMaterialsVES").innerText = formatVES(rawMaterialsTotalUSD);
-
-      document.getElementById("displayTotalInvestmentUSD").innerText = formatUSD(totalInvestmentUSD);
-      document.getElementById("displayTotalInvestmentVES").innerText = formatVES(totalInvestmentUSD);
-
-      document.getElementById("displayUnitCostUSD").innerText = formatUSD(unitCostUSD);
-      document.getElementById("displayUnitCostVES").innerText = formatVES(unitCostUSD);
-
-      document.getElementById("displayMarginPercent").innerText = profitMarginPercent;
-      document.getElementById("displayUnitProfitUSD").innerText = formatUSD(unitProfitUSD);
-      document.getElementById("displayUnitProfitVES").innerText = formatVES(unitProfitUSD);
-
-      document.getElementById("displayTotalSalesUSD").innerText = formatUSD(totalSalesUSD);
-      document.getElementById("displayTotalSalesVES").innerText = formatVES(totalSalesUSD);
-
-      document.getElementById("displayTotalNetProfitUSD").innerText = formatUSD(totalNetProfitUSD);
-      document.getElementById("displayTotalNetProfitVES").innerText = formatVES(totalNetProfitUSD);
-
-      document.getElementById("displayRealProfitMargin").innerText = `${realProfitMargin.toFixed(1)}%`;
-    }
-
-    function saveState() {
-      const items = [];
-      document.querySelectorAll('.item-row').forEach(row => {
-        items.push({
-          name: row.querySelector('.item-name').value,
-          buyCost: row.querySelector('.item-buy-cost').value,
-          buyQty: row.querySelector('.item-buy-qty').value,
-          buyUnit: row.querySelector('.item-buy-unit').value,
-          useQty: row.querySelector('.item-use-qty').value,
-          useUnit: row.querySelector('.item-use-unit').value
-        });
-      });
-
-      const state = {
-        productName: document.getElementById('productName').value,
-        bcvRate: document.getElementById('bcvRate').value,
-        unitsProduced: document.getElementById('unitsProduced').value,
-        laborCost: document.getElementById('laborCost').value,
-        profitMargin: document.getElementById('profitMargin').value,
-        marginType: document.getElementById('marginType').value,
-        items: items
-      };
-
-      localStorage.setItem('costCalculatorStatePro', JSON.stringify(state));
-    }
-
-    function loadSavedState() {
-      const saved = localStorage.getItem('costCalculatorStatePro');
-      document.getElementById("itemsContainer").innerHTML = "";
-
-      if (saved) {
-        try {
-          const state = JSON.parse(saved);
-          document.getElementById('productName').value = state.productName || "Producto Especial";
-          document.getElementById('bcvRate').value = state.bcvRate || "36.50";
-          document.getElementById('unitsProduced').value = state.unitsProduced || "10";
-          document.getElementById('laborCost').value = state.laborCost || "1.00";
-          document.getElementById('profitMargin').value = state.profitMargin || "40";
-          document.getElementById('marginType').value = state.marginType || "cost";
-
-          if (state.items && state.items.length > 0) {
-            state.items.forEach(item => addItem(item));
-          } else {
-            defaultData.forEach(item => addItem(item));
-          }
-        } catch(e) {
-          defaultData.forEach(item => addItem(item));
-        }
-      } else {
-        defaultData.forEach(item => addItem(item));
-      }
-      calculateTotal();
-    }
-
-    function resetDefaults() {
-      localStorage.removeItem('costCalculatorStatePro');
-      loadSavedState();
-      showToast("Se han cargado los valores iniciales");
-    }
-
-    function generateSummaryText() {
-      const prodName = document.getElementById("productName").value || "Producto";
-      const bcv = parseFloat(document.getElementById("bcvRate").value) || 1;
-      const units = document.getElementById("unitsProduced").value;
-      const priceUSD = document.getElementById("displayUnitPriceUSD").innerText;
-      const priceVES = document.getElementById("displayUnitPriceVES").innerText;
-      const costUSD = document.getElementById("displayUnitCostUSD").innerText;
-      const profitNetUSD = document.getElementById("displayTotalNetProfitUSD").innerText;
-
-      return `📊 *RESUMEN DE COSTOS & PRECIO - ${prodName.toUpperCase()}*\n\n` +
-             `🏷️ *Precio Venta Sugerido (Unidad):*\n` +
-             `👉 *${priceUSD}* | *${priceVES}*\n\n` +
-             `📦 *Unidades por Lote:* ${units}\n` +
-             `⚙️ *Costo Real por Unidad:* ${costUSD}\n` +
-             `💵 *Ganancia Neta Total Lote:* ${profitNetUSD}\n` +
-             `💱 *Tasa de Cambio BCV:* Bs. ${bcv.toFixed(2)}\n\n` +
-             `_Calculado con AG MicroApps_ 🚀`;
-    }
-
-    function copyFormattedSummary() {
-      const text = generateSummaryText();
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
-      showToast("¡Resumen copiado al portapapeles!");
-    }
-
-    function shareWhatsApp() {
-      const text = generateSummaryText();
-      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-      window.open(url, "_blank");
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById("toast");
-      document.getElementById("toastMsg").innerText = msg;
-      toast.classList.remove("opacity-0", "pointer-events-none", "translate-y-4");
-      toast.classList.add("opacity-100", "translate-y-0");
-      setTimeout(() => {
-        toast.classList.add("opacity-0", "pointer-events-none", "translate-y-4");
-        toast.classList.remove("opacity-100", "translate-y-0");
-      }, 2500);
+      // 4. Reflejar valores exactos en la tarjeta
+      document.getElementById("displayMainPrice").innerText = `$ ${salePrice.toFixed(2)}`;
+      document.getElementById("displayCost").innerText = `$${totalCost.toFixed(2)}`;
+      document.getElementById("displayProfit").innerText = `$${profitAmount.toFixed(2)}`;
+      document.getElementById("displaySale").innerText = `$${salePrice.toFixed(2)}`;
     }
   </script>
 </body>
