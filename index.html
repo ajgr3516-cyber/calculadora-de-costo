@@ -3,366 +3,559 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora Digital de Costos - Telegram Mini App</title>
-  <!-- Script oficial de Telegram Web App -->
+  <title>Calculadora de Costos Avanzada PRO - AG MicroApps</title>
+  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#0b0a19',
+              card: '#0f132e',
+              input: '#16142e',
+              border: '#2b2752',
+              cyan: '#00d2ff',
+              green: '#2ed573',
+              purple: '#a55eea',
+              yellow: '#ffb703',
+              red: '#ff4757'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
-      background-color: var(--tg-theme-bg-color, #0b0a19);
-      color: var(--tg-theme-text-color, #ffffff);
-      padding: 14px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background-color: #0b0a19;
+      color: #ffffff;
       min-height: 100vh;
     }
 
-    .container {
-      width: 100%;
-      max-width: 440px;
+    .glow-cyan {
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.18);
     }
 
-    .card {
-      background-color: #0f132e;
-      border: 1.5px solid #00d2ff;
-      border-radius: 20px;
-      padding: 22px 18px;
-      box-shadow: 0 0 25px rgba(0, 210, 255, 0.15);
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0a19;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2b2752;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00d2ff;
     }
 
-    /* Indicador de Pasos */
-    .step-indicator {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: #1f274d;
-      transition: all 0.3s ease;
-    }
-
-    .dot.active {
-      background-color: #00d2ff;
-      box-shadow: 0 0 8px #00d2ff;
-      width: 24px;
-      border-radius: 8px;
-    }
-
-    h1 {
-      font-size: 1.3rem;
-      font-weight: 900;
-      text-align: center;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-      background: linear-gradient(135deg, #ffffff 0%, #a0aec0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .subtitle {
-      font-size: 0.82rem;
-      color: #a0aec0;
-      text-align: center;
-      margin-bottom: 18px;
-      line-height: 1.35;
-    }
-
-    /* Lista de Beneficios y Especificaciones (Texto Blanco Claro) */
-    .feature-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .feature-item {
+    select option {
       background-color: #16142e;
-      border: 1px solid #2b2752;
-      border-radius: 12px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.85rem;
-      color: #ffffff; /* Alto contraste para lectura perfecta */
-      font-weight: 500;
-      line-height: 1.3;
-    }
-
-    .feature-icon {
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-
-    /* Caja de Precio en Oferta */
-    .price-box {
-      background: linear-gradient(180deg, #131a3a 0%, #0c1126 100%);
-      border: 1.5px dashed #00d2ff;
-      border-radius: 16px;
-      padding: 16px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .old-price {
-      text-decoration: line-through;
-      color: #ff4757;
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
-
-    .current-price {
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: #2ed573;
-      margin: 3px 0;
-    }
-
-    .price-tag {
-      font-size: 0.75rem;
-      color: #00d2ff;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 700;
-    }
-
-    /* Botones de Acción */
-    .btn-action {
-      width: 100%;
-      background: linear-gradient(90deg, #00d2ff 0%, #0072ff 100%);
-      border: none;
-      border-radius: 12px;
-      padding: 15px;
       color: #ffffff;
-      font-size: 0.95rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      box-shadow: 0 6px 18px rgba(0, 210, 255, 0.35);
-      transition: transform 0.2s;
-    }
-
-    .btn-action:active {
-      transform: scale(0.98);
-    }
-
-    .btn-whatsapp {
-      background: linear-gradient(90deg, #25d366 0%, #128c7e 100%);
-      box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35);
-    }
-
-    /* Estilos del Paso 2 (Checkout) */
-    .hidden {
-      display: none;
-    }
-
-    .payment-methods {
-      background-color: #16142e;
-      border: 1px solid #2b2752;
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 16px;
-    }
-
-    .payment-title {
-      font-size: 0.8rem;
-      color: #00d2ff;
-      font-weight: 700;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .payment-info {
-      font-size: 0.83rem;
-      color: #ffffff;
-      line-height: 1.6;
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.78rem;
-      color: #a0aec0;
-      margin-bottom: 4px;
-    }
-
-    input {
-      width: 100%;
-      background-color: #16142e;
-      border: 1px solid #2b2752;
-      border-radius: 10px;
-      padding: 11px 12px;
-      color: #ffffff;
-      font-size: 0.88rem;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #00d2ff;
-    }
-
-    .btn-back {
-      background: none;
-      border: none;
-      color: #a0aec0;
-      font-size: 0.78rem;
-      cursor: pointer;
-      margin-bottom: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
     }
   </style>
 </head>
-<body>
+<body class="p-3 sm:p-5 flex justify-center items-start min-h-screen">
 
-  <div class="container">
-    <div class="card">
-      
-      <!-- Indicadores de Paso -->
-      <div class="step-indicator">
-        <div class="dot active" id="dot1"></div>
-        <div class="dot" id="dot2"></div>
+  <div class="w-full max-w-3xl space-y-5">
+    
+    <!-- Header App Title -->
+    <header class="text-center py-2 relative">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-xs font-bold uppercase tracking-wider mb-2">
+        <i class="fa-solid fa-bolt text-brand-yellow"></i> AG MicroApps Pro
       </div>
+      <h1 class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-brand-cyan tracking-wide uppercase">
+        Calculadora de Costos & Margen
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-1">Gestión de recetas, materia prima e indicadores en USD y VES</p>
+    </header>
 
-      <!-- PASO 1: INFORMACIÓN, ESPECIFICACIONES Y OFERTA -->
-      <div id="step1">
-        <h1>CALCULADORA DE COSTOS PRO</h1>
-        <p class="subtitle">La herramienta digital definitiva para emprendedores, fabricantes y comercios.</p>
-
-        <!-- Especificaciones y Beneficios -->
-        <div class="feature-list">
-          <div class="feature-item">
-            <span class="feature-icon">📊</span>
-            <span><strong>Gestión de Materia Prima:</strong> Desglose automático de cada insumo en dólares ($).</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">🔍</span>
-            <span><strong>Costo Real por Unidad:</strong> Divide la producción total y te da el costo exacto por producto.</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">⚙️</span>
-            <span><strong>Mano de Obra y Gastos:</strong> Suma imprevistos y gastos operativos a tu lote.</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">💡</span>
-            <span><strong>Precio Sugerido de Venta:</strong> Configura tu % de ganancia ideal sin perder dinero.</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">💵</span>
-            <span><strong>Margen Neta Limpia:</strong> Visualiza tu ganancia real en dólares y el % de retorno.</span>
-          </div>
-        </div>
-
-        <!-- Caja de Oferta Especial -->
-        <div class="price-box">
-          <div class="old-price">Precio Regular: $15.00 USD</div>
-          <div class="current-price">$ 5.00 USD</div>
-          <div class="price-tag">OFERTA ESPECIAL • ACCESO DE POR VIDA</div>
-        </div>
-
-        <button type="button" class="btn-action" onclick="goToStep(2)">
-          🛒 ¡QUIERO ADQUIRIRLA AHORA!
+    <!-- General Settings Card -->
+    <div class="bg-brand-card border border-brand-border rounded-2xl p-4 sm:p-5 shadow-xl">
+      <div class="text-xs font-bold text-brand-cyan uppercase tracking-wider mb-3 flex items-center justify-between">
+        <span><i class="fa-solid fa-sliders mr-2"></i> Configuración del Producto & Tasa</span>
+        <button onclick="resetDefaults()" class="text-slate-400 hover:text-brand-red text-xs transition-colors flex items-center gap-1">
+          <i class="fa-solid fa-rotate-right"></i> Reiniciar
         </button>
       </div>
 
-      <!-- PASO 2: DATOS DE PAGO MÓVIL -->
-      <div id="step2" class="hidden">
-        <button type="button" class="btn-back" onclick="goToStep(1)">← Volver a las especificaciones</button>
-        
-        <h1>DATOS DE PAGO MÓVIL</h1>
-        <p class="subtitle">Realiza tu pago e ingresa los datos para recibir tu acceso de inmediato.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Nombre del Producto / Receta</label>
+          <input type="text" id="productName" value="Producto o Lote Especial" placeholder="Ej: Jabón Líquido / Franela Sublimada" class="w-full bg-brand-input border border-brand-border rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-cyan outline-none transition-all" oninput="calculateTotal(); saveState();">
+        </div>
 
-        <div class="payment-methods">
-          <div class="payment-title">🇻🇪 Datos Bancarios (Banco de Venezuela)</div>
-          <div class="payment-info">
-            • <strong>Banco:</strong> 0102 - Banco de Venezuela<br>
-            • <strong>Teléfono:</strong> 0424-9090289<br>
-            • <strong>Cédula:</strong> 18.451.548<br>
-            <span style="color: #00d2ff; font-size: 0.76rem;">* Calcula el monto en Bs. a la tasa oficial del día.</span>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1 flex justify-between">
+            <span>Tasa BCV (Bs. / USD $)</span>
+            <span class="text-brand-cyan text-[10px]">Oficial</span>
+          </label>
+          <div class="relative">
+            <span class="absolute left-3 top-2.5 text-slate-400 text-sm font-semibold">Bs.</span>
+            <input type="number" id="bcvRate" value="36.50" step="0.01" class="w-full bg-brand-input border border-brand-border rounded-xl pl-10 pr-3 py-2.5 text-sm font-bold text-brand-green focus:border-brand-cyan outline-none transition-all" oninput="calculateTotal(); saveState();">
+          </div>
+        </div>
+      </div>
+
+      <!-- Secondary Controls Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">Unidades Lote</label>
+          <input type="number" id="unitsProduced" value="10" min="1" step="1" class="w-full bg-brand-input border border-brand-border rounded-xl px-3 py-2 text-sm font-bold text-white focus:border-brand-cyan outline-none" oninput="calculateTotal(); saveState();">
+        </div>
+
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">Gastos / M.O ($)</label>
+          <input type="number" id="laborCost" value="1.00" step="0.5" class="w-full bg-brand-input border border-brand-border rounded-xl px-3 py-2 text-sm font-bold text-white focus:border-brand-cyan outline-none" oninput="calculateTotal(); saveState();">
+        </div>
+
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">Margen (%)</label>
+          <input type="number" id="profitMargin" value="40" step="1" class="w-full bg-brand-input border border-brand-border rounded-xl px-3 py-2 text-sm font-bold text-brand-yellow focus:border-brand-cyan outline-none" oninput="calculateTotal(); saveState();">
+        </div>
+
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">Fórmula Margen</label>
+          <select id="marginType" class="w-full bg-brand-input border border-brand-border rounded-xl px-2 py-2 text-xs font-semibold text-white focus:border-brand-cyan outline-none" onchange="calculateTotal(); saveState();">
+            <option value="cost">Sobre Costo</option>
+            <option value="price">Sobre Venta</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Raw Materials Section -->
+    <div class="bg-brand-card border border-brand-border rounded-2xl p-4 sm:p-5 shadow-xl">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-xs font-bold text-brand-cyan uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-boxes-stacked"></i> Materia Prima & Insumos
+        </div>
+        <span class="text-[11px] text-slate-400" id="itemCountBadge">0 ítems</span>
+      </div>
+
+      <div id="itemsContainer" class="space-y-3 mb-4"></div>
+
+      <button type="button" onclick="addItem()" class="w-full sm:w-auto bg-brand-input hover:bg-brand-cyan/10 border border-brand-cyan/40 text-brand-cyan px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-95">
+        <i class="fa-solid fa-plus"></i> Agregar Insumo / Materia Prima
+      </button>
+    </div>
+
+    <!-- Results Dashboard Card -->
+    <div class="bg-brand-card border-2 border-brand-cyan rounded-2xl p-5 shadow-2xl glow-cyan relative overflow-hidden">
+      <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-brand-cyan/10 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Main Unit Price Highlight Header -->
+      <div class="text-center pb-5 border-b border-brand-border/80">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+          <i class="fa-solid fa-tag text-brand-cyan mr-1"></i> Precio Venta Sugerido por Unidad
+        </div>
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 my-2">
+          <div class="text-3xl sm:text-4xl font-black text-brand-green tracking-tight" id="displayUnitPriceUSD">
+            $ 0.00
+          </div>
+          <div class="hidden sm:block text-slate-600 text-2xl font-light">|</div>
+          <div class="text-xl sm:text-2xl font-extrabold text-brand-cyan" id="displayUnitPriceVES">
+            Bs. 0.00
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Nombre y Apellido</label>
-          <input type="text" id="buyerName" placeholder="Tu nombre completo">
+        <div class="inline-block bg-brand-input border border-brand-border px-3 py-1 rounded-full text-xs text-slate-300 font-medium" id="displayUnitBadge">
+          Lote para 1 Unidad
+        </div>
+      </div>
+
+      <!-- Detailed Breakdown Grid -->
+      <div class="mt-5 space-y-2.5 text-xs sm:text-sm">
+        
+        <div class="flex justify-between items-center py-1">
+          <span class="text-slate-400">Materia Prima Total (Lote):</span>
+          <div class="text-right">
+            <span class="font-bold text-brand-cyan" id="displayRawMaterialsUSD">$0.00</span>
+            <span class="text-[11px] text-slate-400 block" id="displayRawMaterialsVES">Bs. 0.00</span>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>Tu Teléfono / WhatsApp</label>
-          <input type="tel" id="buyerPhone" placeholder="Ej: 04141234567">
+        <div class="flex justify-between items-center py-1">
+          <span class="text-slate-400">Inversión Lote (M.P + Gastos):</span>
+          <div class="text-right">
+            <span class="font-bold text-white" id="displayTotalInvestmentUSD">$0.00</span>
+            <span class="text-[11px] text-slate-400 block" id="displayTotalInvestmentVES">Bs. 0.00</span>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>Últimos 4 dígitos o Referencia de Pago</label>
-          <input type="text" id="paymentRef" placeholder="Ej: 5678">
+        <div class="flex justify-between items-center py-1">
+          <span class="text-slate-400">Costo Real por Unidad:</span>
+          <div class="text-right">
+            <span class="font-bold text-brand-purple" id="displayUnitCostUSD">$0.00</span>
+            <span class="text-[11px] text-slate-400 block" id="displayUnitCostVES">Bs. 0.00</span>
+          </div>
         </div>
 
-        <button type="button" class="btn-action btn-whatsapp" onclick="sendToWhatsApp()">
-          📲 CONFIRMAR PAGO POR WHATSAPP
+        <div class="border-t border-brand-border/60 my-2 pt-2"></div>
+
+        <div class="flex justify-between items-center py-1">
+          <span class="text-slate-400">
+            Ganancia por Unidad (<span id="displayMarginPercent" class="text-brand-yellow font-bold">0</span>%):
+          </span>
+          <div class="text-right">
+            <span class="font-bold text-brand-yellow" id="displayUnitProfitUSD">$0.00</span>
+            <span class="text-[11px] text-slate-400 block" id="displayUnitProfitVES">Bs. 0.00</span>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center py-1">
+          <span class="text-slate-400">Ventas Totales Esperadas:</span>
+          <div class="text-right">
+            <span class="font-bold text-white" id="displayTotalSalesUSD">$0.00</span>
+            <span class="text-[11px] text-slate-400 block" id="displayTotalSalesVES">Bs. 0.00</span>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center py-1 bg-brand-input/50 p-2.5 rounded-xl border border-brand-border">
+          <span class="font-bold text-white">Ganancia Neta Total Lote:</span>
+          <div class="text-right">
+            <span class="font-black text-brand-green text-base" id="displayTotalNetProfitUSD">$0.00</span>
+            <span class="text-xs text-brand-green/80 block font-bold" id="displayTotalNetProfitVES">Bs. 0.00</span>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center py-1">
+          <span class="text-slate-400">Margen Real sobre Ventas:</span>
+          <span class="font-bold text-brand-yellow text-sm" id="displayRealProfitMargin">0.00%</span>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 pt-4 border-t border-brand-border/80">
+        <button onclick="copyFormattedSummary()" class="w-full bg-brand-input hover:bg-slate-800 text-white border border-brand-border py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 active:scale-95">
+          <i class="fa-regular fa-copy text-brand-cyan"></i> Copiar Resumen
+        </button>
+        <button onclick="shareWhatsApp()" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95">
+          <i class="fa-brands fa-whatsapp text-lg"></i> Compartir WhatsApp
         </button>
       </div>
 
     </div>
+
+    <!-- Notification Toast Box -->
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-brand-cyan text-brand-dark font-extrabold px-4 py-2.5 rounded-full shadow-2xl text-xs flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none translate-y-4 z-50">
+      <i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Notificación</span>
+    </div>
+
   </div>
 
   <script>
-    // Inicializar Telegram WebApp
-    let tg = window.Telegram.WebApp;
-    tg.expand();
-
-    // TU NÚMERO DE WHATSAPP CON CÓDIGO DE PAÍS
-    const MY_WHATSAPP_NUMBER = "584249090289"; 
-
-    function goToStep(stepNumber) {
-      if (stepNumber === 2) {
-        document.getElementById("step1").classList.add("hidden");
-        document.getElementById("step2").classList.remove("hidden");
-        document.getElementById("dot1").classList.remove("active");
-        document.getElementById("dot2").classList.add("active");
-      } else {
-        document.getElementById("step2").classList.add("hidden");
-        document.getElementById("step1").classList.remove("hidden");
-        document.getElementById("dot2").classList.remove("active");
-        document.getElementById("dot1").classList.add("active");
-      }
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
     }
 
-    function sendToWhatsApp() {
-      const name = document.getElementById("buyerName").value.trim();
-      const phone = document.getElementById("buyerPhone").value.trim();
-      const ref = document.getElementById("paymentRef").value.trim();
+    const UNIT_RATIOS = {
+      'Kg': { base: 'g', factor: 1000 },
+      'Gr': { base: 'g', factor: 1 },
+      'L': { base: 'ml', factor: 1000 },
+      'ml': { base: 'ml', factor: 1 },
+      'Galon': { base: 'ml', factor: 3785.41 },
+      'Unid': { base: 'u', factor: 1 }
+    };
 
-      if (!name || !ref) {
-        alert("Por favor completa tu Nombre y el Número de Referencia.");
-        return;
+    const defaultData = [
+      { name: "Insumo Principal", buyCost: 5.00, buyQty: 1000, buyUnit: "Gr", useQty: 250, useUnit: "Gr" },
+      { name: "Empaque / Adhesivo", buyCost: 1.50, buyQty: 10, buyUnit: "Unid", useQty: 1, useUnit: "Unid" }
+    ];
+
+    window.onload = function() {
+      loadSavedState();
+    };
+
+    function getItemCalculatedCost(buyCost, buyQty, buyUnit, useQty, useUnit) {
+      if (!buyCost || !buyQty || buyQty <= 0 || !useQty || useQty <= 0) return 0;
+      const buyUnitInfo = UNIT_RATIOS[buyUnit] || { base: 'u', factor: 1 };
+      const useUnitInfo = UNIT_RATIOS[useUnit] || { base: 'u', factor: 1 };
+
+      if (buyUnitInfo.base !== useUnitInfo.base) return 0;
+
+      const totalBuyBaseUnits = buyQty * buyUnitInfo.factor;
+      const totalUseBaseUnits = useQty * useUnitInfo.factor;
+      const costPerBaseUnit = buyCost / totalBuyBaseUnits;
+      return costPerBaseUnit * totalUseBaseUnits;
+    }
+
+    function addItem(data = null) {
+      const container = document.getElementById("itemsContainer");
+      const item = data || { name: "", buyCost: "", buyQty: "", buyUnit: "Kg", useQty: "", useUnit: "Gr" };
+
+      const row = document.createElement("div");
+      row.className = "item-row bg-brand-input/80 border border-brand-border p-3 rounded-xl space-y-2 text-xs transition-all hover:border-brand-border/90";
+      
+      row.innerHTML = `
+        <div class="flex items-center justify-between gap-2">
+          <input type="text" class="item-name bg-brand-card border border-brand-border rounded-lg px-2.5 py-1.5 text-xs text-white font-medium focus:border-brand-cyan outline-none w-full" placeholder="Nombre insumo" value="${item.name}" oninput="calculateTotal(); saveState();">
+          <button type="button" onclick="removeItem(this)" class="text-brand-red hover:bg-brand-red/10 p-1.5 rounded-lg transition-colors" title="Eliminar">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center">
+          <div class="col-span-1">
+            <label class="text-[10px] text-slate-400 block mb-0.5">$ Costo Compra</label>
+            <input type="number" class="item-buy-cost bg-brand-card border border-brand-border rounded-lg px-2 py-1 text-xs text-white focus:border-brand-cyan outline-none w-full" placeholder="0.00" value="${item.buyCost}" step="0.01" oninput="calculateTotal(); saveState();">
+          </div>
+
+          <div class="col-span-1">
+            <label class="text-[10px] text-slate-400 block mb-0.5">Cant. Comprada</label>
+            <div class="flex gap-1">
+              <input type="number" class="item-buy-qty bg-brand-card border border-brand-border rounded-lg px-1.5 py-1 text-xs text-white focus:border-brand-cyan outline-none w-full" placeholder="1" value="${item.buyQty}" step="0.01" oninput="calculateTotal(); saveState();">
+              <select class="item-buy-unit bg-brand-card border border-brand-border rounded-lg px-1 py-1 text-[11px] text-brand-cyan font-bold outline-none" onchange="syncUnits(this); calculateTotal(); saveState();">
+                <option value="Kg" ${item.buyUnit === 'Kg' ? 'selected' : ''}>Kg</option>
+                <option value="Gr" ${item.buyUnit === 'Gr' ? 'selected' : ''}>Gr</option>
+                <option value="L" ${item.buyUnit === 'L' ? 'selected' : ''}>L</option>
+                <option value="ml" ${item.buyUnit === 'ml' ? 'selected' : ''}>ml</option>
+                <option value="Galon" ${item.buyUnit === 'Galon' ? 'selected' : ''}>Galón</option>
+                <option value="Unid" ${item.buyUnit === 'Unid' ? 'selected' : ''}>Unid</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-span-2 sm:col-span-2">
+            <label class="text-[10px] text-slate-400 block mb-0.5">Cant. Usada en Lote</label>
+            <div class="flex gap-1">
+              <input type="number" class="item-use-qty bg-brand-card border border-brand-border rounded-lg px-2 py-1 text-xs text-white focus:border-brand-cyan outline-none w-full" placeholder="0" value="${item.useQty}" step="0.01" oninput="calculateTotal(); saveState();">
+              <select class="item-use-unit bg-brand-card border border-brand-border rounded-lg px-1 py-1 text-[11px] text-brand-cyan font-bold outline-none" onchange="calculateTotal(); saveState();">
+                <option value="Gr" ${item.useUnit === 'Gr' ? 'selected' : ''}>Gr</option>
+                <option value="Kg" ${item.useUnit === 'Kg' ? 'selected' : ''}>Kg</option>
+                <option value="ml" ${item.useUnit === 'ml' ? 'selected' : ''}>ml</option>
+                <option value="L" ${item.useUnit === 'L' ? 'selected' : ''}>L</option>
+                <option value="Galon" ${item.useUnit === 'Galon' ? 'selected' : ''}>Galón</option>
+                <option value="Unid" ${item.useUnit === 'Unid' ? 'selected' : ''}>Unid</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-span-2 sm:col-span-1 text-right bg-brand-card/60 p-1.5 rounded-lg border border-brand-border/50">
+            <span class="text-[10px] text-slate-400 block">Costo Usado</span>
+            <span class="item-subtotal font-extrabold text-brand-green text-xs">$0.00</span>
+          </div>
+        </div>
+      `;
+
+      container.appendChild(row);
+      calculateTotal();
+      updateBadgeCount();
+    }
+
+    function removeItem(btn) {
+      btn.closest('.item-row').remove();
+      calculateTotal();
+      saveState();
+      updateBadgeCount();
+    }
+
+    function syncUnits(buyUnitSelect) {
+      const row = buyUnitSelect.closest('.item-row');
+      const useUnitSelect = row.querySelector('.item-use-unit');
+      const buyUnit = buyUnitSelect.value;
+
+      if (buyUnit === 'Kg' || buyUnit === 'Gr') useUnitSelect.value = 'Gr';
+      else if (buyUnit === 'L' || buyUnit === 'ml' || buyUnit === 'Galon') useUnitSelect.value = 'ml';
+      else if (buyUnit === 'Unid') useUnitSelect.value = 'Unid';
+    }
+
+    function updateBadgeCount() {
+      const count = document.querySelectorAll('.item-row').length;
+      document.getElementById('itemCountBadge').innerText = `${count} ${count === 1 ? 'insumo' : 'insumos'}`;
+    }
+
+    function calculateTotal() {
+      const rows = document.querySelectorAll(".item-row");
+      let rawMaterialsTotalUSD = 0;
+
+      rows.forEach(row => {
+        const buyCost = parseFloat(row.querySelector(".item-buy-cost").value) || 0;
+        const buyQty = parseFloat(row.querySelector(".item-buy-qty").value) || 0;
+        const buyUnit = row.querySelector(".item-buy-unit").value;
+        const useQty = parseFloat(row.querySelector(".item-use-qty").value) || 0;
+        const useUnit = row.querySelector(".item-use-unit").value;
+
+        const subtotal = getItemCalculatedCost(buyCost, buyQty, buyUnit, useQty, useUnit);
+        row.querySelector(".item-subtotal").innerText = `$${subtotal.toFixed(2)}`;
+        rawMaterialsTotalUSD += subtotal;
+      });
+
+      const bcvRate = Math.max(0.01, parseFloat(document.getElementById("bcvRate").value) || 1);
+      const unitsProduced = Math.max(1, parseFloat(document.getElementById("unitsProduced").value) || 1);
+      const laborCostUSD = parseFloat(document.getElementById("laborCost").value) || 0;
+      const profitMarginPercent = parseFloat(document.getElementById("profitMargin").value) || 0;
+      const marginType = document.getElementById("marginType").value;
+
+      const totalInvestmentUSD = rawMaterialsTotalUSD + laborCostUSD;
+      const unitCostUSD = totalInvestmentUSD / unitsProduced;
+
+      let unitSalePriceUSD = 0;
+      if (marginType === "cost") {
+        unitSalePriceUSD = unitCostUSD * (1 + profitMarginPercent / 100);
+      } else {
+        const marginDecimal = profitMarginPercent / 100;
+        unitSalePriceUSD = marginDecimal < 1 ? unitCostUSD / (1 - marginDecimal) : unitCostUSD;
       }
 
-      const message = `¡Hola! 👋 Acabo de realizar mi *Pago Móvil* para adquirir la Calculadora Digital de Costos Pro.\n\n` +
-                      `👤 *Nombre:* ${name}\n` +
-                      `📞 *WhatsApp:* ${phone || 'No especificado'}\n` +
-                      `🏦 *Método:* Pago Móvil (Banco de Venezuela)\n` +
-                      `🧾 *Referencia:* ${ref}\n\n` +
-                      `Adjunto el comprobante de pago. Quedo a la espera de mi acceso. ¡Muchas gracias!`;
+      const unitProfitUSD = unitSalePriceUSD - unitCostUSD;
+      const totalSalesUSD = unitSalePriceUSD * unitsProduced;
+      const totalNetProfitUSD = totalSalesUSD - totalInvestmentUSD;
+      const realProfitMargin = totalSalesUSD > 0 ? (totalNetProfitUSD / totalSalesUSD) * 100 : 0;
 
-      const whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, "_blank");
+      const formatUSD = (val) => `$${val.toFixed(2)}`;
+      const formatVES = (val) => `Bs. ${(val * bcvRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      document.getElementById("displayUnitPriceUSD").innerText = formatUSD(unitSalePriceUSD);
+      document.getElementById("displayUnitPriceVES").innerText = formatVES(unitSalePriceUSD);
+      document.getElementById("displayUnitBadge").innerText = `Lote para ${unitsProduced} ${unitsProduced === 1 ? 'Unidad' : 'Unidades'}`;
+
+      document.getElementById("displayRawMaterialsUSD").innerText = formatUSD(rawMaterialsTotalUSD);
+      document.getElementById("displayRawMaterialsVES").innerText = formatVES(rawMaterialsTotalUSD);
+
+      document.getElementById("displayTotalInvestmentUSD").innerText = formatUSD(totalInvestmentUSD);
+      document.getElementById("displayTotalInvestmentVES").innerText = formatVES(totalInvestmentUSD);
+
+      document.getElementById("displayUnitCostUSD").innerText = formatUSD(unitCostUSD);
+      document.getElementById("displayUnitCostVES").innerText = formatVES(unitCostUSD);
+
+      document.getElementById("displayMarginPercent").innerText = profitMarginPercent;
+      document.getElementById("displayUnitProfitUSD").innerText = formatUSD(unitProfitUSD);
+      document.getElementById("displayUnitProfitVES").innerText = formatVES(unitProfitUSD);
+
+      document.getElementById("displayTotalSalesUSD").innerText = formatUSD(totalSalesUSD);
+      document.getElementById("displayTotalSalesVES").innerText = formatVES(totalSalesUSD);
+
+      document.getElementById("displayTotalNetProfitUSD").innerText = formatUSD(totalNetProfitUSD);
+      document.getElementById("displayTotalNetProfitVES").innerText = formatVES(totalNetProfitUSD);
+
+      document.getElementById("displayRealProfitMargin").innerText = `${realProfitMargin.toFixed(1)}%`;
+    }
+
+    function saveState() {
+      const items = [];
+      document.querySelectorAll('.item-row').forEach(row => {
+        items.push({
+          name: row.querySelector('.item-name').value,
+          buyCost: row.querySelector('.item-buy-cost').value,
+          buyQty: row.querySelector('.item-buy-qty').value,
+          buyUnit: row.querySelector('.item-buy-unit').value,
+          useQty: row.querySelector('.item-use-qty').value,
+          useUnit: row.querySelector('.item-use-unit').value
+        });
+      });
+
+      const state = {
+        productName: document.getElementById('productName').value,
+        bcvRate: document.getElementById('bcvRate').value,
+        unitsProduced: document.getElementById('unitsProduced').value,
+        laborCost: document.getElementById('laborCost').value,
+        profitMargin: document.getElementById('profitMargin').value,
+        marginType: document.getElementById('marginType').value,
+        items: items
+      };
+
+      localStorage.setItem('costCalculatorStatePro', JSON.stringify(state));
+    }
+
+    function loadSavedState() {
+      const saved = localStorage.getItem('costCalculatorStatePro');
+      document.getElementById("itemsContainer").innerHTML = "";
+
+      if (saved) {
+        try {
+          const state = JSON.parse(saved);
+          document.getElementById('productName').value = state.productName || "Producto Especial";
+          document.getElementById('bcvRate').value = state.bcvRate || "36.50";
+          document.getElementById('unitsProduced').value = state.unitsProduced || "10";
+          document.getElementById('laborCost').value = state.laborCost || "1.00";
+          document.getElementById('profitMargin').value = state.profitMargin || "40";
+          document.getElementById('marginType').value = state.marginType || "cost";
+
+          if (state.items && state.items.length > 0) {
+            state.items.forEach(item => addItem(item));
+          } else {
+            defaultData.forEach(item => addItem(item));
+          }
+        } catch(e) {
+          defaultData.forEach(item => addItem(item));
+        }
+      } else {
+        defaultData.forEach(item => addItem(item));
+      }
+      calculateTotal();
+    }
+
+    function resetDefaults() {
+      localStorage.removeItem('costCalculatorStatePro');
+      loadSavedState();
+      showToast("Se han cargado los valores iniciales");
+    }
+
+    function generateSummaryText() {
+      const prodName = document.getElementById("productName").value || "Producto";
+      const bcv = parseFloat(document.getElementById("bcvRate").value) || 1;
+      const units = document.getElementById("unitsProduced").value;
+      const priceUSD = document.getElementById("displayUnitPriceUSD").innerText;
+      const priceVES = document.getElementById("displayUnitPriceVES").innerText;
+      const costUSD = document.getElementById("displayUnitCostUSD").innerText;
+      const profitNetUSD = document.getElementById("displayTotalNetProfitUSD").innerText;
+
+      return `📊 *RESUMEN DE COSTOS & PRECIO - ${prodName.toUpperCase()}*\n\n` +
+             `🏷️ *Precio Venta Sugerido (Unidad):*\n` +
+             `👉 *${priceUSD}* | *${priceVES}*\n\n` +
+             `📦 *Unidades por Lote:* ${units}\n` +
+             `⚙️ *Costo Real por Unidad:* ${costUSD}\n` +
+             `💵 *Ganancia Neta Total Lote:* ${profitNetUSD}\n` +
+             `💱 *Tasa de Cambio BCV:* Bs. ${bcv.toFixed(2)}\n\n` +
+             `_Calculado con AG MicroApps_ 🚀`;
+    }
+
+    function copyFormattedSummary() {
+      const text = generateSummaryText();
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      showToast("¡Resumen copiado al portapapeles!");
+    }
+
+    function shareWhatsApp() {
+      const text = generateSummaryText();
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank");
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      document.getElementById("toastMsg").innerText = msg;
+      toast.classList.remove("opacity-0", "pointer-events-none", "translate-y-4");
+      toast.classList.add("opacity-100", "translate-y-0");
+      setTimeout(() => {
+        toast.classList.add("opacity-0", "pointer-events-none", "translate-y-4");
+        toast.classList.remove("opacity-100", "translate-y-0");
+      }, 2500);
     }
   </script>
 </body>
